@@ -32,14 +32,14 @@ class OrderData extends DataTransferObject
         $url = trim(rtrim($url, '?'));
 
         return new self([
-            'id' => Url::extractId($url),
-            'url' => $url,
-            'status' => $response->getBody()['status'],
-            'expires' => $response->getBody()['expires'],
-            'identifiers' => $response->getBody()['identifiers'],
+            'id'                   => Url::extractId($url),
+            'url'                  => $url,
+            'status'               => $response->getBody()['status'],
+            'expires'              => $response->getBody()['expires'],
+            'identifiers'          => $response->getBody()['identifiers'],
             'domainValidationUrls' => $response->getBody()['authorizations'],
-            'finalizeUrl' => $response->getBody()['finalize'],
-            'accountUrl' => $accountUrl,
+            'finalizeUrl'          => $response->getBody()['finalize'],
+            'accountUrl'           => $accountUrl,
         ]);
     }
 
@@ -51,22 +51,22 @@ class OrderData extends DataTransferObject
 
     public function isPending(): bool
     {
-        return ($this->status === 'pending');
+        return $this->status === 'pending';
     }
 
     public function isReady(): bool
     {
-        return ($this->status === 'ready');
+        return $this->status === 'ready';
     }
 
     public function isValid(): bool
     {
-        return ($this->status === 'valid');
+        return $this->status === 'valid';
     }
 
     public function isInvalid(): bool
     {
-        return ($this->status === 'invalid');
+        return $this->status === 'invalid';
     }
 
     public function isFinalized()

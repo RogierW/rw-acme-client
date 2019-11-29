@@ -9,10 +9,10 @@ class KeyId
         $privateKey = openssl_pkey_get_private(file_get_contents($accountKeysPath . 'private.pem'));
 
         $data = [
-            'alg' => 'RS256',
-            'kid' => $kid,
+            'alg'   => 'RS256',
+            'kid'   => $kid,
             'nonce' => $nonce,
-            'url' => $url
+            'url'   => $url,
         ];
 
         $payload = is_array($payload)
@@ -33,7 +33,7 @@ class KeyId
 
         return [
             'protected' => $protected64,
-            'payload' => $payload64,
+            'payload'   => $payload64,
             'signature' => $signed64,
         ];
     }

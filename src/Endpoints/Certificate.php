@@ -40,7 +40,7 @@ class Certificate extends Endpoint
             $revokeUrl,
             [
                 'certificate' => $certificate,
-                'reason' => $reason,
+                'reason'      => $reason,
             ]
         );
 
