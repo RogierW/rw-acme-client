@@ -69,6 +69,6 @@ class Response
             return;
         }
 
-        return (int)$this->headers['http_code'];
+        return (int) $this->headers['http_code'];
     }
 }

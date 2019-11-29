@@ -37,10 +37,10 @@ class DomainValidation extends Endpoint
         $digest = $this->createDigest();
 
         return [
-            'type' => 'http',
+            'type'       => 'http',
             'identifier' => $domainValidation->identifier['value'],
-            'filename' => $domainValidation->file['token'],
-            'content' => $domainValidation->file['token'] . '.' . $digest,
+            'filename'   => $domainValidation->file['token'],
+            'content'    => $domainValidation->file['token'] . '.' . $digest,
         ];
     }
 
@@ -65,9 +65,9 @@ class DomainValidation extends Endpoint
         $details = openssl_pkey_get_details($privateKey);
 
         $header = [
-            'e' => Base64::urlSafeEncode($details['rsa']['e']),
+            'e'   => Base64::urlSafeEncode($details['rsa']['e']),
             'kty' => 'RSA',
-            'n' => Base64::urlSafeEncode($details['rsa']['n']),
+            'n'   => Base64::urlSafeEncode($details['rsa']['n']),
         ];
 
         return Base64::urlSafeEncode(hash('sha256', json_encode($header), true));

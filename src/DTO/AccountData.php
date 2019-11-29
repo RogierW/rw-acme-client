@@ -23,11 +23,11 @@ class AccountData extends DataTransferObject
         $url = trim(Arr::get($response->getRawHeaders(), 'Location', ''));
 
         return new self([
-            'id' => Url::extractId($url),
-            'url' => $url,
-            'key' => $response->getBody()['key'],
-            'status' => $response->getBody()['status'],
-            'contact' => $response->getBody()['contact'],
+            'id'        => Url::extractId($url),
+            'url'       => $url,
+            'key'       => $response->getBody()['key'],
+            'status'    => $response->getBody()['status'],
+            'contact'   => $response->getBody()['contact'],
             'agreement' => $response->getBody()['agreement'] ?? '',
             'initialIp' => $response->getBody()['initialIp'],
             'createdAt' => $response->getBody()['createdAt'],

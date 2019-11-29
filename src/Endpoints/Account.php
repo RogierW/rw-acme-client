@@ -28,7 +28,7 @@ class Account extends Endpoint
         $this->initAccountDirectory();
 
         $payload = [
-            'contact' => $this->buildContactPayload($this->client->getAccountEmail()),
+            'contact'              => $this->buildContactPayload($this->client->getAccountEmail()),
             'termsOfServiceAgreed' => true,
         ];
 
@@ -83,7 +83,7 @@ class Account extends Endpoint
             throw new RuntimeException('Key type is not supported.');
         }
 
-        if(!is_dir($this->client->getAccountKeysPath())) {
+        if (!is_dir($this->client->getAccountKeysPath())) {
             mkdir($this->client->getAccountKeysPath());
         }
 

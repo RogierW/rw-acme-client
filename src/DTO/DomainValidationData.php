@@ -19,11 +19,11 @@ class DomainValidationData extends DataTransferObject
     public static function fromResponse(Response $response): self
     {
         return new self([
-            'identifier' => $response->getBody()['identifier'],
-            'status' => $response->getBody()['status'],
-            'expires' => $response->getBody()['expires'],
-            'file' => self::getValidationByType($response->getBody()['challenges'], DomainValidation::TYPE_HTTP),
-            'dns' => self::getValidationByType($response->getBody()['challenges'], DomainValidation::TYPE_DNS),
+            'identifier'       => $response->getBody()['identifier'],
+            'status'           => $response->getBody()['status'],
+            'expires'          => $response->getBody()['expires'],
+            'file'             => self::getValidationByType($response->getBody()['challenges'], DomainValidation::TYPE_HTTP),
+            'dns'              => self::getValidationByType($response->getBody()['challenges'], DomainValidation::TYPE_DNS),
             'validationRecord' => Arr::get($response->getBody(), 'validationRecord', []),
         ]);
     }
@@ -41,11 +41,11 @@ class DomainValidationData extends DataTransferObject
 
     public function isPending(): bool
     {
-        return ($this->status === 'pending');
+        return $this->status === 'pending';
     }
 
     public function isValid(): bool
     {
-        return ($this->status === 'valid');
+        return $this->status === 'valid';
     }
 }

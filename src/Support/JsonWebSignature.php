@@ -13,11 +13,11 @@ class JsonWebSignature
             'alg' => 'RS256',
             'jwk' => [
                 'kty' => 'RSA',
-                'n' => Base64::UrlSafeEncode($details["rsa"]["n"]),
-                'e' => Base64::UrlSafeEncode($details["rsa"]["e"]),
+                'n'   => Base64::UrlSafeEncode($details['rsa']['n']),
+                'e'   => Base64::UrlSafeEncode($details['rsa']['e']),
             ],
             'nonce' => $nonce,
-            'url' => $url,
+            'url'   => $url,
         ];
 
         $payload64 = Base64::urlSafeEncode(str_replace('\\/', '/', json_encode($payload)));
@@ -29,7 +29,7 @@ class JsonWebSignature
 
         return [
             'protected' => $protected64,
-            'payload' => $payload64,
+            'payload'   => $payload64,
             'signature' => $signed64,
         ];
     }
