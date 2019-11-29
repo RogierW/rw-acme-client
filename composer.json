@@ -1,0 +1,33 @@
+{
+  "name": "rogierw/letsencrypt-client",
+  "description": "LetsEncrypt client library for ACME v2 written in PHP.",
+  "homepage": "https://github.com/RogierW/letsencrypt-client",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Rogier van der Werf",
+      "email": "rogier@rwweb.nl",
+      "homepage": "http://rogier.eu",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": "^7.1",
+    "psr/log": "^1.1",
+    "spatie/data-transfer-object": "^1.10"
+  },
+  "require-dev": {
+    "larapack/dd": "^1.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Rogierw\\Letsencrypt\\": "src"
+    },
+    "files": [
+      "src/Support/helpers.php"
+    ]
+  },
+  "config": {
+    "sort-packages": true
+  }
+}
