@@ -10,7 +10,7 @@ class OpenSsl
     {
         $key = openssl_pkey_new([
             'private_key_bits' => 2048,
-            'digest_alg' => 'sha256',
+            'digest_alg'       => 'sha256',
         ]);
 
         if (!openssl_pkey_export($key, $out)) {
@@ -24,7 +24,7 @@ class OpenSsl
     {
         $dn = ['commonName' => $domains[0]];
 
-        $san = implode(",", array_map(function ($dns) {
+        $san = implode(',', array_map(function ($dns) {
             return 'DNS:' . $dns;
         }, $domains));
 
@@ -49,7 +49,7 @@ class OpenSsl
 
         $csr = openssl_csr_new($dn, $privateKey, [
             'digest_alg' => 'sha256',
-            'config' => stream_get_meta_data($tempFile)['uri'],
+            'config'     => stream_get_meta_data($tempFile)['uri'],
         ]);
 
         fclose($tempFile);

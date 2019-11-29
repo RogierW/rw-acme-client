@@ -18,15 +18,15 @@ class Order extends Endpoint
             }
 
             $identifiers[] = [
-                'type' => 'dns',
+                'type'  => 'dns',
                 'value' => $domain,
             ];
         }
 
         $payload = [
             'identifiers' => $identifiers,
-            'notBefore' => '',
-            'notAfter' => '',
+            'notBefore'   => '',
+            'notAfter'    => '',
         ];
 
         $newOrderUrl = $this->client->directory()->newOrder();
