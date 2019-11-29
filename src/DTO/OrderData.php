@@ -64,6 +64,11 @@ class OrderData extends DataTransferObject
         return ($this->status === 'valid');
     }
 
+    public function isInValid(): bool
+    {
+        return ($this->status === 'invalid');
+    }
+
     public function isFinalized()
     {
         return $this->finalized;
