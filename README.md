@@ -31,7 +31,7 @@ $account = $client->account()->get();
 
 ### Creating an order
 ```php
-$order = $client->order()->new($account, ['letsencrypt.example.com']);
+$order = $client->order()->new($account, ['example.com']);
 ```
 
 ### Getting the order
@@ -58,6 +58,12 @@ if ($domainValidation->isPending()) {
     $domainValidationStatus = $client->domainValidation()->status($order);
     $domainValidation = $domainValidationStatus[0];
 }
+```
+
+### Generating a CSR
+```php
+$privateKey = \Rogierw\Letsencrypt\Support\OpenSsl::generatePrivateKey();
+$csr = \Rogierw\Letsencrypt\Support\OpenSsl::generateCsr(['example.com'], $privateKey);
 ```
 
 ### Finalizing order
