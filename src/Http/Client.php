@@ -77,7 +77,6 @@ class Client
     {
         $encoded = json_encode($data);
 
-        $this->lastRequest['body'] = $encoded;
         curl_setopt($curlHandle, CURLOPT_POSTFIELDS, $encoded);
     }
 
