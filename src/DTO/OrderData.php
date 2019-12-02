@@ -59,11 +59,6 @@ class OrderData extends DataTransferObject
         return $this->status === 'ready';
     }
 
-    public function isIssued(): bool
-    {
-        return $this->isValid();
-    }
-
     public function isValid(): bool
     {
         return $this->status === 'valid';
