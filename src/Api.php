@@ -81,7 +81,7 @@ class Api
         }
 
         if (!is_dir($this->accountKeysPath)) {
-            mkdir($this->accountKeysPath);
+            mkdir($this->accountKeysPath, 0755, true);
         }
 
         return $this->accountKeysPath;
