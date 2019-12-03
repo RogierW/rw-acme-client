@@ -5,6 +5,7 @@ namespace Rogierw\Letsencrypt\Endpoints;
 use Rogierw\Letsencrypt\DTO\AccountData;
 use Rogierw\Letsencrypt\DTO\DomainValidationData;
 use Rogierw\Letsencrypt\DTO\OrderData;
+use Rogierw\Letsencrypt\Support\Arr;
 use Rogierw\Letsencrypt\Support\Base64;
 
 class DomainValidation extends Endpoint
@@ -46,6 +47,8 @@ class DomainValidation extends Endpoint
 
     public function start(AccountData $accountData, DomainValidationData $domainValidation)
     {
+        $this->client->logger('info', 'Start HTTP challenge for ' . Arr::first($domainValidation['identifier']));
+
         $digest = $this->createDigest();
 
         $payload = [

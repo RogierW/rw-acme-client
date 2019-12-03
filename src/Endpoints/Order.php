@@ -64,7 +64,10 @@ class Order extends Endpoint
     public function finalize(OrderData $orderData, string $csr): bool
     {
         if (!$orderData->isReady()) {
-            $this->client->logger('error', "Order status for {$orderData->id} is $orderData->status. Cannot finalize order.");
+            $this->client->logger(
+                'error',
+                "Order status for {$orderData->id} is {$orderData->status}. Cannot finalize order."
+            );
 
             return false;
         }
