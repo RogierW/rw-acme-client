@@ -39,6 +39,7 @@ class OrderData extends DataTransferObject
             'identifiers'          => $response->getBody()['identifiers'],
             'domainValidationUrls' => $response->getBody()['authorizations'],
             'finalizeUrl'          => $response->getBody()['finalize'],
+            'certificateUrl'       => Arr::get($response->getBody(), 'certificate'),
             'accountUrl'           => $accountUrl,
         ]);
     }
@@ -69,13 +70,13 @@ class OrderData extends DataTransferObject
         return $this->status === 'invalid';
     }
 
-    public function isFinalized()
+    public function isFinalized(): bool
     {
-        return $this->finalized;
+        return ($this->finalized || $this->isValid());
     }
 
-    public function isNotFinalized()
+    public function isNotFinalized(): bool
     {
-        return !$this->finalized;
+        return !$this->isFinalized();
     }
 }
