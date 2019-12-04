@@ -48,4 +48,9 @@ class DomainValidationData extends DataTransferObject
     {
         return $this->status === 'valid';
     }
+
+    public function isInvalid(): bool
+    {
+        return $this->status === 'invalid';
+    }
 }

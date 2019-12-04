@@ -47,7 +47,10 @@ class DomainValidation extends Endpoint
 
     public function start(AccountData $accountData, DomainValidationData $domainValidation)
     {
-        $this->client->logger('info', 'Start HTTP challenge for ' . Arr::first($domainValidation->identifier));
+        $this->client->logger(
+            'info',
+            'Start HTTP challenge for ' . Arr::get($domainValidation->identifier, 'value', '')
+        );
 
         $digest = $this->createDigest();
 
