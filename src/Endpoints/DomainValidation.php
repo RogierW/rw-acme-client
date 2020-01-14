@@ -5,6 +5,7 @@ namespace Rogierw\Letsencrypt\Endpoints;
 use Rogierw\Letsencrypt\DTO\AccountData;
 use Rogierw\Letsencrypt\DTO\DomainValidationData;
 use Rogierw\Letsencrypt\DTO\OrderData;
+use Rogierw\Letsencrypt\Http\Response;
 use Rogierw\Letsencrypt\Support\Arr;
 use Rogierw\Letsencrypt\Support\Base64;
 
@@ -13,6 +14,7 @@ class DomainValidation extends Endpoint
     const TYPE_HTTP = 'http-01';
     const TYPE_DNS = 'dns-01';
 
+    /** @return OrderData[] */
     public function status(OrderData $orderData, string $type = 'all'): array
     {
         $data = [];
@@ -45,7 +47,7 @@ class DomainValidation extends Endpoint
         ];
     }
 
-    public function start(AccountData $accountData, DomainValidationData $domainValidation)
+    public function start(AccountData $accountData, DomainValidationData $domainValidation): Response
     {
         $this->client->logger(
             'info',
