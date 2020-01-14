@@ -92,6 +92,8 @@ class Order extends Endpoint
             return true;
         }
 
+        $this->client->logger('error', 'Finalize order: ' . json_encode($response->getBody()));
+
         return false;
     }
 }
