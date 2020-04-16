@@ -5,3 +5,4 @@ disabled:
   - self_accessor
   - concat_without_spaces
   - no_unneeded_control_parentheses
+  - align_double_arrow
