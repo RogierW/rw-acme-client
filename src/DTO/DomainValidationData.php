@@ -19,11 +19,11 @@ class DomainValidationData extends DataTransferObject
     public static function fromResponse(Response $response): self
     {
         return new self([
-            'identifier'       => $response->getBody()['identifier'],
-            'status'           => $response->getBody()['status'],
-            'expires'          => $response->getBody()['expires'],
-            'file'             => self::getValidationByType($response->getBody()['challenges'], DomainValidation::TYPE_HTTP),
-            'dns'              => self::getValidationByType($response->getBody()['challenges'], DomainValidation::TYPE_DNS),
+            'identifier' => $response->getBody()['identifier'],
+            'status' => $response->getBody()['status'],
+            'expires' => $response->getBody()['expires'],
+            'file' => self::getValidationByType($response->getBody()['challenges'], DomainValidation::TYPE_HTTP),
+            'dns' => self::getValidationByType($response->getBody()['challenges'], DomainValidation::TYPE_DNS),
             'validationRecord' => Arr::get($response->getBody(), 'validationRecord', []),
         ]);
     }
@@ -52,5 +52,39 @@ class DomainValidationData extends DataTransferObject
     public function isInvalid(): bool
     {
         return $this->status === 'invalid';
+    }
+
+    public function hasErrors(): bool
+    {
+        if (array_key_exists('error', $this->file) && !empty($this->file['error'])) {
+            return true;
+        }
+
+        if (array_key_exists('error', $this->dns) && !empty($this->dns['error'])) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function getErrors(): array
+    {
+        if ($this->hasErrors()) {
+            $data = [];
+
+            $data[] = [
+                'domainValidationType' => DomainValidation::TYPE_HTTP,
+                'error' => Arr::get($this->file, 'error'),
+            ];
+
+            $data[] = [
+                'domainValidationType' => DomainValidation::TYPE_DNS,
+                'error' => Arr::get($this->dns, 'error'),
+            ];
+
+            return $data;
+        }
+
+        return [];
     }
 }
