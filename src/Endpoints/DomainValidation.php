@@ -14,7 +14,7 @@ class DomainValidation extends Endpoint
     const TYPE_HTTP = 'http-01';
     const TYPE_DNS = 'dns-01';
 
-    /** @return OrderData[] */
+    /** @return DomainValidationData[] */
     public function status(OrderData $orderData, string $type = 'all'): array
     {
         $data = [];
