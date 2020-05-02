@@ -51,6 +51,10 @@ $domainValidationStatus = $client->domainValidation()->status($order);
 $domainValidation = $domainValidationStatus[0];
 ```
 
+### Start DNS challenge
+@TODO
+
+
 ### Start HTTP challenge
 ```php
 if ($domainValidation->isPending()) {
