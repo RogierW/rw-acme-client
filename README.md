@@ -13,7 +13,7 @@ This library allows you to request, renew and revoke SSL certificates provided b
 ## Installation
 You can install the package via composer:
 
-`composer require rogierw/letsencrypt-client`
+`composer require rogierw/rw-acme-client`
 
 ## Usage
 

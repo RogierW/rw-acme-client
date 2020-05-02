@@ -90,7 +90,7 @@ class Client
             'Accept: application/json',
         ], $headers));
 
-        curl_setopt($curlHandle, CURLOPT_USERAGENT, 'rogierw/letsencrypt-client');
+        curl_setopt($curlHandle, CURLOPT_USERAGENT, 'rogierw/rw-acme-client');
         curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curlHandle, CURLOPT_TIMEOUT, $this->timeout);
         curl_setopt($curlHandle, CURLOPT_SSL_VERIFYPEER, true);

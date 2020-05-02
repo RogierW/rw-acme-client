@@ -1,7 +1,7 @@
 {
-  "name": "rogierw/letsencrypt-client",
+  "name": "rogierw/rw-acme-client",
   "description": "LetsEncrypt client library for ACME v2 written in PHP.",
-  "homepage": "https://github.com/RogierW/letsencrypt-client",
+  "homepage": "https://github.com/RogierW/rw-acme-client",
   "license": "MIT",
   "authors": [
     {
