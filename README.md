@@ -1,7 +1,7 @@
 # Let’s Encrypt ACME client written in PHP
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/rogierw/letsencrypt-client.svg?style=flat-square)](https://packagist.org/packages/rogierw/letsencrypt-client)
-[![Scrutinizer Code Quality](https://img.shields.io/scrutinizer/g/RogierW/letsencrypt-client.svg?style=flat-square)](https://scrutinizer-ci.com/g/RogierW/letsencrypt-client/?branch=master)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/rogierw/rw-acme-client.svg?style=flat-square)](https://packagist.org/packages/rogierw/rw-acme-client)
+[![Scrutinizer Code Quality](https://img.shields.io/scrutinizer/g/RogierW/rw-acme-client.svg?style=flat-square)](https://scrutinizer-ci.com/g/RogierW/rw-acme-client/?branch=master)
 [![StyleCI](https://github.styleci.io/repos/224902862/shield?style=flat-square&branch=master)](https://github.styleci.io/repos/224902862)
 
 This library allows you to request, renew and revoke SSL certificates provided by Let's Encrypt.
