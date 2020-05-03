@@ -1,8 +1,8 @@
 <?php
 
-namespace Rogierw\Letsencrypt\Http;
+namespace Rogierw\RwAcme\Http;
 
-use Rogierw\Letsencrypt\Support\Str;
+use Rogierw\RwAcme\Support\Str;
 
 class Response
 {

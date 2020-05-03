@@ -1,10 +1,10 @@
 <?php
 
-namespace Rogierw\Letsencrypt\DTO;
+namespace Rogierw\RwAcme\DTO;
 
-use Rogierw\Letsencrypt\Http\Response;
-use Rogierw\Letsencrypt\Support\Arr;
-use Rogierw\Letsencrypt\Support\Url;
+use Rogierw\RwAcme\Http\Response;
+use Rogierw\RwAcme\Support\Arr;
+use Rogierw\RwAcme\Support\Url;
 use Spatie\DataTransferObject\DataTransferObject;
 
 class AccountData extends DataTransferObject

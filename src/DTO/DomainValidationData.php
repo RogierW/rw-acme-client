@@ -1,10 +1,10 @@
 <?php
 
-namespace Rogierw\Letsencrypt\DTO;
+namespace Rogierw\RwAcme\DTO;
 
-use Rogierw\Letsencrypt\Endpoints\DomainValidation;
-use Rogierw\Letsencrypt\Http\Response;
-use Rogierw\Letsencrypt\Support\Arr;
+use Rogierw\RwAcme\Endpoints\DomainValidation;
+use Rogierw\RwAcme\Http\Response;
+use Rogierw\RwAcme\Support\Arr;
 use Spatie\DataTransferObject\DataTransferObject;
 
 class DomainValidationData extends DataTransferObject

@@ -1,10 +1,10 @@
 <?php
 
-namespace Rogierw\Letsencrypt\Endpoints;
+namespace Rogierw\RwAcme\Endpoints;
 
-use Rogierw\Letsencrypt\DTO\AccountData;
-use Rogierw\Letsencrypt\DTO\OrderData;
-use Rogierw\Letsencrypt\Support\Base64;
+use Rogierw\RwAcme\DTO\AccountData;
+use Rogierw\RwAcme\DTO\OrderData;
+use Rogierw\RwAcme\Support\Base64;
 use RuntimeException;
 
 class Order extends Endpoint

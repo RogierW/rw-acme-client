@@ -17,7 +17,7 @@ You can install the package via composer:
 
 ## Usage
 
-You can create an instance of `Rogierw\Letsencrypt\Api` client.
+You can create an instance of `Rogierw\RwAcme\Api` client.
 
 ```php
 $client = new Api('test@example.com', __DIR__ . '/__account');
@@ -70,8 +70,8 @@ if ($domainValidation->isPending()) {
 
 ### Generating a CSR
 ```php
-$privateKey = \Rogierw\Letsencrypt\Support\OpenSsl::generatePrivateKey();
-$csr = \Rogierw\Letsencrypt\Support\OpenSsl::generateCsr(['example.com'], $privateKey);
+$privateKey = \Rogierw\RwAcme\Support\OpenSsl::generatePrivateKey();
+$csr = \Rogierw\RwAcme\Support\OpenSsl::generateCsr(['example.com'], $privateKey);
 ```
 
 ### Finalizing order

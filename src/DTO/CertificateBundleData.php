@@ -1,8 +1,8 @@
 <?php
 
-namespace Rogierw\Letsencrypt\DTO;
+namespace Rogierw\RwAcme\DTO;
 
-use Rogierw\Letsencrypt\Http\Response;
+use Rogierw\RwAcme\Http\Response;
 use Spatie\DataTransferObject\DataTransferObject;
 
 class CertificateBundleData extends DataTransferObject

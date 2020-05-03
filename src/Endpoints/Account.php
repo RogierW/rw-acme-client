@@ -1,10 +1,10 @@
 <?php
 
-namespace Rogierw\Letsencrypt\Endpoints;
+namespace Rogierw\RwAcme\Endpoints;
 
-use Rogierw\Letsencrypt\DTO\AccountData;
-use Rogierw\Letsencrypt\Support\CryptRSA;
-use Rogierw\Letsencrypt\Support\JsonWebSignature;
+use Rogierw\RwAcme\DTO\AccountData;
+use Rogierw\RwAcme\Support\CryptRSA;
+use Rogierw\RwAcme\Support\JsonWebSignature;
 use RuntimeException;
 
 class Account extends Endpoint

@@ -1,6 +1,6 @@
 <?php
 
-namespace Rogierw\Letsencrypt\Http;
+namespace Rogierw\RwAcme\Http;
 
 class Client
 {

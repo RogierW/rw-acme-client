@@ -1,9 +1,9 @@
 <?php
 
-namespace Rogierw\Letsencrypt\Endpoints;
+namespace Rogierw\RwAcme\Endpoints;
 
-use Rogierw\Letsencrypt\Api;
-use Rogierw\Letsencrypt\Support\KeyId;
+use Rogierw\RwAcme\Api;
+use Rogierw\RwAcme\Support\KeyId;
 
 abstract class Endpoint
 {

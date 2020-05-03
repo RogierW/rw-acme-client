@@ -21,7 +21,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Rogierw\\Letsencrypt\\": "src"
+      "Rogierw\\RwAcme\\": "src"
     },
     "files": [
       "src/Support/helpers.php"

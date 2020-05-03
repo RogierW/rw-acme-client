@@ -1,6 +1,6 @@
 <?php
 
-namespace Rogierw\Letsencrypt\Endpoints;
+namespace Rogierw\RwAcme\Endpoints;
 
 class Directory extends Endpoint
 {

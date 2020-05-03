@@ -1,6 +1,6 @@
 <?php
 
-namespace Rogierw\Letsencrypt\Support;
+namespace Rogierw\RwAcme\Support;
 
 class JsonWebSignature
 {

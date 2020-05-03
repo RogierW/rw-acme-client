@@ -1,16 +1,16 @@
 <?php
 
-namespace Rogierw\Letsencrypt;
+namespace Rogierw\RwAcme;
 
 use Psr\Log\LoggerInterface;
-use Rogierw\Letsencrypt\Endpoints\Account;
-use Rogierw\Letsencrypt\Endpoints\Certificate;
-use Rogierw\Letsencrypt\Endpoints\Directory;
-use Rogierw\Letsencrypt\Endpoints\DomainValidation;
-use Rogierw\Letsencrypt\Endpoints\Nonce;
-use Rogierw\Letsencrypt\Endpoints\Order;
-use Rogierw\Letsencrypt\Http\Client;
-use Rogierw\Letsencrypt\Support\Str;
+use Rogierw\RwAcme\Endpoints\Account;
+use Rogierw\RwAcme\Endpoints\Certificate;
+use Rogierw\RwAcme\Endpoints\Directory;
+use Rogierw\RwAcme\Endpoints\DomainValidation;
+use Rogierw\RwAcme\Endpoints\Nonce;
+use Rogierw\RwAcme\Endpoints\Order;
+use Rogierw\RwAcme\Http\Client;
+use Rogierw\RwAcme\Support\Str;
 
 class Api
 {
@@ -26,7 +26,7 @@ class Api
     /** @var LoggerInterface|null */
     private $logger;
 
-    /** @var \Rogierw\Letsencrypt\Http\Client */
+    /** @var \Rogierw\RwAcme\Http\Client */
     private $httpClient;
 
     public function __construct(string $accountEmail, string $accountKeysPath, bool $staging = false, LoggerInterface $logger = null)
