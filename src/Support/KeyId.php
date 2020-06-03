@@ -4,7 +4,7 @@ namespace Rogierw\RwAcme\Support;
 
 class KeyId
 {
-    public static function generate(array $payload = null, string $kid, string $url, string $nonce, string $accountKeysPath): array
+    public static function generate(string $accountKeysPath, string $kid, string $url, string $nonce, ?array $payload = null): array
     {
         $privateKey = openssl_pkey_get_private(file_get_contents($accountKeysPath . 'private.pem'));
 

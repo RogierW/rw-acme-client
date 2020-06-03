@@ -14,14 +14,14 @@ abstract class Endpoint
         $this->client = $client;
     }
 
-    protected function createKeyId(string $acountUrl, string $url, $payload = null): array
+    protected function createKeyId(string $acountUrl, string $url, ?array $payload = null): array
     {
         return KeyId::generate(
-            $payload,
+            $this->client->getAccountKeysPath(),
             $acountUrl,
             $url,
             $this->client->nonce()->getNew(),
-            $this->client->getAccountKeysPath()
+            $payload
         );
     }
 
