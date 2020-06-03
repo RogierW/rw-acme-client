@@ -24,4 +24,9 @@ abstract class Endpoint
             $this->client->getAccountKeysPath()
         );
     }
+
+    protected function getAccountPrivateKey(): string
+    {
+        return file_get_contents($this->client->getAccountKeysPath() . 'private.pem');
+    }
 }

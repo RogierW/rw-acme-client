@@ -6,16 +6,13 @@ class JsonWebSignature
 {
     public static function generate(array $payload, string $url, string $nonce, string $accountKeysPath): array
     {
-        $privateKey = openssl_pkey_get_private(file_get_contents($accountKeysPath . 'private.pem'));
-        $details = openssl_pkey_get_details($privateKey);
+        $accountKey = file_get_contents($accountKeysPath . 'private.pem');
+
+        $privateKey = openssl_pkey_get_private($accountKey);
 
         $protected = [
             'alg' => 'RS256',
-            'jwk' => [
-                'kty' => 'RSA',
-                'n'   => Base64::UrlSafeEncode($details['rsa']['n']),
-                'e'   => Base64::UrlSafeEncode($details['rsa']['e']),
-            ],
+            'jwk' => JsonWebKey::compute($accountKey),
             'nonce' => $nonce,
             'url'   => $url,
         ];

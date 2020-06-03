@@ -7,7 +7,7 @@ use Rogierw\RwAcme\DTO\DomainValidationData;
 use Rogierw\RwAcme\DTO\OrderData;
 use Rogierw\RwAcme\Http\Response;
 use Rogierw\RwAcme\Support\Arr;
-use Rogierw\RwAcme\Support\Base64;
+use Rogierw\RwAcme\Support\JsonWebKey;
 
 class DomainValidation extends Endpoint
 {
@@ -37,13 +37,13 @@ class DomainValidation extends Endpoint
 
     public function getFileValidationData(DomainValidationData $domainValidation): array
     {
-        $digest = $this->createDigest();
+        $thumbprint = JsonWebKey::thumbprint(JsonWebKey::compute($this->getAccountPrivateKey()));
 
         return [
-            'type'       => 'http',
+            'type' => self::TYPE_HTTP,
             'identifier' => $domainValidation->identifier['value'],
-            'filename'   => $domainValidation->file['token'],
-            'content'    => $domainValidation->file['token'] . '.' . $digest,
+            'filename' => $domainValidation->file['token'],
+            'content' => $domainValidation->file['token'] . '.' . $thumbprint,
         ];
     }
 
@@ -54,30 +54,14 @@ class DomainValidation extends Endpoint
             'Start HTTP challenge for ' . Arr::get($domainValidation->identifier, 'value', '')
         );
 
-        $digest = $this->createDigest();
+        $thumbprint = JsonWebKey::thumbprint(JsonWebKey::compute($this->getAccountPrivateKey()));
 
         $payload = [
-            'keyAuthorization' => $domainValidation->file['token'] . '.' . $digest,
+            'keyAuthorization' => $domainValidation->file['token'] . '.' . $thumbprint,
         ];
 
         $data = $this->createKeyId($accountData->url, $domainValidation->file['url'], $payload);
 
         return $this->client->getHttpClient()->post($domainValidation->file['url'], $data);
-    }
-
-    private function createDigest(): string
-    {
-        $privateKeyContent = file_get_contents($this->client->getAccountKeysPath() . 'private.pem');
-        $privateKey = openssl_pkey_get_private($privateKeyContent);
-
-        $details = openssl_pkey_get_details($privateKey);
-
-        $header = [
-            'e'   => Base64::urlSafeEncode($details['rsa']['e']),
-            'kty' => 'RSA',
-            'n'   => Base64::urlSafeEncode($details['rsa']['n']),
-        ];
-
-        return Base64::urlSafeEncode(hash('sha256', json_encode($header), true));
     }
 }
