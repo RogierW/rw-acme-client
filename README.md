@@ -72,9 +72,18 @@ Array
 )
 ```
 
+The Let's Encrypt validation server will make a request to the following URL:
+```
+http://example.com/.well-known/acme-challenge/sqQnDYNNywpkwuHeU4b4FTPI2mwSrDF13ti08YFMm9M
+```
 
 #### dns-01
 @TODO
+
+#### Start domain validation
+```php
+$client->domainValidation()->start($account, $validationStatus[0])
+```
 
 #### Generating a CSR
 ```php
@@ -84,7 +93,7 @@ $csr = \Rogierw\RwAcme\Support\OpenSsl::generateCsr(['example.com'], $privateKey
 
 #### Finalizing order
 ```php
-if ($order->isReady() && $domainValidation->isValid() && $order->isNotFinalized()) {
+if ($order->isReady() && $client->domainValidation()->challengeSucceeded($order, DomainValidation::TYPE_HTTP)) {
     $client->order()->finalize($order, $csr);
 }
 ```
