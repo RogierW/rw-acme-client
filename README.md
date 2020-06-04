@@ -33,62 +33,70 @@ if (!$client->account()->exists()) {
 $account = $client->account()->get();
 ```
 
-### Creating an order
+#### Creating an order
 ```php
 $order = $client->order()->new($account, ['example.com']);
 ```
 
-### Getting the order
+#### Getting the order
 ```php
 $order = $client->order()->get($order->id);
 ```
 
-### Getting the DCV status
-```php
-$domainValidationStatus = $client->domainValidation()->status($order);
+### Domain validation
 
-// Get the first element in the array. Usually there is only one element.
-$domainValidation = $domainValidationStatus[0];
+#### Getting the DCV status
+```php
+$validationStatus = $client->domainValidation()->status($order);
 ```
 
-### Start DNS challenge
+#### http-01
+
+Get the name and content for the validation file:
+```php
+// Get the data for the HTTP challenge; filename and content.
+$validationData = $client->domainValidation()->getFileValidationData($validationStatus);
+```
+
+This returns an array:
+```php
+Array
+(
+    [0] => Array
+        (
+            [type] => http-01
+            [identifier] => example.com
+            [filename] => sqQnDYNNywpkwuHeU4b4FTPI2mwSrDF13ti08YFMm9M
+            [content] => sqQnDYNNywpkwuHeU4b4FTPI2mwSrDF13ti08YFMm9M.kB7_eWSDdG3aWIaPSp6Uy4vLBbBI5M0COvM-AZOBcoQ
+        )
+)
+```
+
+
+#### dns-01
 @TODO
 
-
-### Start HTTP challenge
-```php
-if ($domainValidation->isPending()) {
-    // Get the data for the HTTP challenge; filename and content.
-    $validationData = $client->domainValidation()->getFileValidationData($domainValidation);
-
-    $client->domainValidation()->start($account, $domainValidation);
-
-    $domainValidationStatus = $client->domainValidation()->status($order);
-    $domainValidation = $domainValidationStatus[0];
-}
-```
-
-### Generating a CSR
+#### Generating a CSR
 ```php
 $privateKey = \Rogierw\RwAcme\Support\OpenSsl::generatePrivateKey();
 $csr = \Rogierw\RwAcme\Support\OpenSsl::generateCsr(['example.com'], $privateKey);
 ```
 
-### Finalizing order
+#### Finalizing order
 ```php
 if ($order->isReady() && $domainValidation->isValid() && $order->isNotFinalized()) {
     $client->order()->finalize($order, $csr);
 }
 ```
 
-### Getting the actual certificate
+#### Getting the actual certificate
 ```php
 if ($order->isFinalized()) {
     $certificateBundle = $client->certificate()->getBundle($order);
 }
 ```
 
-### Revoke a certificate
+#### Revoke a certificate
 ```php
 if ($order->isValid()) {
     $client->certificate()->revoke($certificateBundle->fullchain);
