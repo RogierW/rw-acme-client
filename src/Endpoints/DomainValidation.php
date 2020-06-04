@@ -9,6 +9,7 @@ use Rogierw\RwAcme\Exceptions\DomainValidationException;
 use Rogierw\RwAcme\Http\Response;
 use Rogierw\RwAcme\Support\Arr;
 use Rogierw\RwAcme\Support\JsonWebKey;
+use Rogierw\RwAcme\Support\LocalChallengeTest;
 
 class DomainValidation extends Endpoint
 {
@@ -56,7 +57,8 @@ class DomainValidation extends Endpoint
         return $authorizations;
     }
 
-    public function start(AccountData $accountData, DomainValidationData $domainValidation): Response
+    /** @throws \Rogierw\RwAcme\Exceptions\DomainValidationException */
+    public function start(AccountData $accountData, DomainValidationData $domainValidation, bool $localTest = true): Response
     {
         $this->client->logger(
             'info',
@@ -64,9 +66,18 @@ class DomainValidation extends Endpoint
         );
 
         $thumbprint = JsonWebKey::thumbprint(JsonWebKey::compute($this->getAccountPrivateKey()));
+        $keyAuthorization = $domainValidation->file['token'] . '.' . $thumbprint;
+
+        if ($localTest) {
+            LocalChallengeTest::http(
+                $domainValidation->identifier['value'],
+                $domainValidation->file['token'],
+                $keyAuthorization
+            );
+        }
 
         $payload = [
-            'keyAuthorization' => $domainValidation->file['token'] . '.' . $thumbprint,
+            'keyAuthorization' => $keyAuthorization,
         ];
 
         $data = $this->createKeyId($accountData->url, $domainValidation->file['url'], $payload);
