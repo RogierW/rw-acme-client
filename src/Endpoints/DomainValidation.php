@@ -35,16 +35,24 @@ class DomainValidation extends Endpoint
         return $data;
     }
 
-    public function getFileValidationData(DomainValidationData $domainValidation): array
+    /** @param DomainValidationData[] $challenges */
+    public function getFileValidationData(array $challenges): array
     {
         $thumbprint = JsonWebKey::thumbprint(JsonWebKey::compute($this->getAccountPrivateKey()));
 
-        return [
-            'type' => self::TYPE_HTTP,
-            'identifier' => $domainValidation->identifier['value'],
-            'filename' => $domainValidation->file['token'],
-            'content' => $domainValidation->file['token'] . '.' . $thumbprint,
-        ];
+        $authorizations = [];
+        foreach ($challenges as $domainValidationData) {
+            if ($domainValidationData->dns['status'] === 'pending') {
+                $authorizations[] = [
+                    'type' => self::TYPE_HTTP,
+                    'identifier' => $domainValidationData->identifier['value'],
+                    'filename' => $domainValidationData->file['token'],
+                    'content' => $domainValidationData->file['token'] . '.' . $thumbprint,
+                ];
+            }
+        }
+
+        return $authorizations;
     }
 
     public function start(AccountData $accountData, DomainValidationData $domainValidation): Response
