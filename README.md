@@ -8,6 +8,7 @@ This library allows you to request, renew and revoke SSL certificates provided b
 
 ## Requirements
 - PHP ^7.1
+- OpenSSL >= 1.0.1
 - cURL extension
 
 ## Installation
@@ -38,7 +39,7 @@ $account = $client->account()->get();
 $order = $client->order()->new($account, ['example.com']);
 ```
 
-#### Getting the order
+#### Getting an order
 ```php
 $order = $client->order()->get($order->id);
 ```
@@ -82,7 +83,11 @@ http://example.com/.well-known/acme-challenge/sqQnDYNNywpkwuHeU4b4FTPI2mwSrDF13t
 
 #### Start domain validation
 ```php
-$client->domainValidation()->start($account, $validationStatus[0])
+try {
+    $client->domainValidation()->start($account, $validationStatus[0]);
+} catch (DomainValidationException $exception) {
+    // The local HTTP challenge test has been failed...
+}
 ```
 
 #### Generating a CSR
