@@ -7,7 +7,10 @@ use Spatie\DataTransferObject\DataTransferObject;
 
 class CertificateBundleData extends DataTransferObject
 {
+    /** @var string */
     public $certificate;
+
+    /** @var string */
     public $fullchain;
 
     public static function fromResponse(Response $response): self

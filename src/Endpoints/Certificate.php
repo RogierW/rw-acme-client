@@ -11,7 +11,9 @@ class Certificate extends Endpoint
 {
     public function getBundle(OrderData $orderData): CertificateBundleData
     {
-        $response = $this->client->getHttpClient()->get($orderData->certificateUrl);
+        $signedPayload = $this->createKeyId($orderData->accountUrl, $orderData->certificateUrl);
+
+        $response = $this->client->getHttpClient()->post($orderData->certificateUrl, $signedPayload);
 
         if ($response->getHttpResponseCode() !== 200) {
             throw new RuntimeException('Failed to fetch certificate.');
