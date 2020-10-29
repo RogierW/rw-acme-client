@@ -13,7 +13,7 @@ class LocalChallengeTest
 
         $response = $httpClient->get($domain . '/.well-known/acme-challenge/' . $token);
 
-        if ($response->getHttpResponseCode() === 200 && $response->getBody() === $keyAuthorization) {
+        if ($response->getBody() === $keyAuthorization) {
             return;
         }
 
