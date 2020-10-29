@@ -17,6 +17,6 @@ class LocalChallengeTest
             return;
         }
 
-        throw DomainValidationException::localHttpChallengeTestFailed($response->getHttpResponseCode());
+        throw DomainValidationException::localHttpChallengeTestFailed($domain, $response->getHttpResponseCode());
     }
 }

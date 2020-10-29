@@ -11,8 +11,12 @@ class DomainValidationException extends Exception
         return new static("Invalid challenge type `{$type}` specified.");
     }
 
-    public static function localHttpChallengeTestFailed(string $code): self
+    public static function localHttpChallengeTestFailed(string $domain, string $code): self
     {
-        return new static("The local HTTP challenge test received an invalid response with a {$code} status code.");
+        return new static(sprintf(
+            'The local HTTP challenge test for %s received an invalid response with a %s status code.',
+            $domain,
+            $code
+        ));
     }
 }
