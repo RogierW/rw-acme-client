@@ -44,7 +44,7 @@ class DomainValidation extends Endpoint
 
         $authorizations = [];
         foreach ($challenges as $domainValidationData) {
-            if ($domainValidationData->dns['status'] === 'pending') {
+            if ($domainValidationData->file['status'] === 'pending') {
                 $authorizations[] = [
                     'type' => self::TYPE_HTTP,
                     'identifier' => $domainValidationData->identifier['value'],
