@@ -13,6 +13,9 @@
   ],
   "require": {
     "php": "^7.1",
+    "ext-curl": "*",
+    "ext-json": "*",
+    "ext-mbstring": "*",
     "psr/log": "^1.1",
     "spatie/data-transfer-object": "^1.10"
   },
