@@ -10,10 +10,14 @@ class Client
     /** @var int */
     private $timeout;
 
-    public function __construct(string $baseUrl, int $timeout = 10)
+    /** @var int */
+    private $maxRedirects;
+
+    public function __construct(string $baseUrl, int $timeout = 10, int $maxRedirects = 0)
     {
         $this->baseUrl = $baseUrl;
         $this->timeout = $timeout;
+        $this->maxRedirects = $maxRedirects;
     }
 
     public function head(string $url)
@@ -97,6 +101,11 @@ class Client
         curl_setopt($curlHandle, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0);
         curl_setopt($curlHandle, CURLOPT_ENCODING, '');
         curl_setopt($curlHandle, CURLOPT_HEADER, true);
+
+        if ($this->maxRedirects > 0) {
+            curl_setopt($curlHandle, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($curlHandle, CURLOPT_MAXREDIRS, $this->maxRedirects);
+        }
 
         return $curlHandle;
     }
