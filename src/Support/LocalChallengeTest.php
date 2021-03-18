@@ -9,7 +9,7 @@ class LocalChallengeTest
 {
     public static function http(string $domain, string $token, string $keyAuthorization): void
     {
-        $httpClient = new Client($domain);
+        $httpClient = new Client($domain, 10, 1);
 
         $response = $httpClient->get($domain . '/.well-known/acme-challenge/' . $token);
 
