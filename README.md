@@ -7,7 +7,7 @@
 This library allows you to request, renew and revoke SSL certificates provided by Let's Encrypt.
 
 ## Requirements
-- PHP ^7.1
+- PHP ^7.1 - ^8.0
 - OpenSSL >= 1.0.1
 - cURL extension
 
