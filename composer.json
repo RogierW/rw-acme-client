@@ -12,12 +12,12 @@
     }
   ],
   "require": {
-    "php": "^7.1",
+    "php": "^7.1 || ^8.0",
     "ext-curl": "*",
     "ext-json": "*",
     "ext-mbstring": "*",
     "psr/log": "^1.1",
-    "spatie/data-transfer-object": "^1.10"
+    "spatie/data-transfer-object": "^1.10 || ^2.8"
   },
   "require-dev": {
     "larapack/dd": "^1.0"
