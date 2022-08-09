@@ -27,7 +27,7 @@ class Api
         private ?LoggerInterface $logger = null
     ) {
         $this->baseUrl = $staging ? self::STAGING_URL : self::PRODUCTION_URL;
-        $this->httpClient = new Client;
+        $this->httpClient = new Client();
     }
 
     public function directory(): Directory
