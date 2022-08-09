@@ -4,7 +4,7 @@ namespace Rogierw\RwAcme\Endpoints;
 
 class Nonce extends Endpoint
 {
-    public function getNew()
+    public function getNew(): string
     {
         $response = $this->client
             ->getHttpClient()

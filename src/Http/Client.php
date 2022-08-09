@@ -2,35 +2,23 @@
 
 namespace Rogierw\RwAcme\Http;
 
+use CurlHandle;
+
 class Client
 {
-    /** @var string */
-    private $baseUrl;
+    public function __construct(private int $timeout = 10, private int $maxRedirects = 0) {}
 
-    /** @var int */
-    private $timeout;
-
-    /** @var int */
-    private $maxRedirects;
-
-    public function __construct(string $baseUrl, int $timeout = 10, int $maxRedirects = 0)
-    {
-        $this->baseUrl = $baseUrl;
-        $this->timeout = $timeout;
-        $this->maxRedirects = $maxRedirects;
-    }
-
-    public function head(string $url)
+    public function head(string $url): Response
     {
         return $this->makeCurlRequest('head', $url);
     }
 
-    public function get(string $url, array $headers = [], array $arguments = [])
+    public function get(string $url, array $headers = [], array $arguments = []): Response
     {
         return $this->makeCurlRequest('get', $url, $headers, $arguments);
     }
 
-    public function post(string $url, array $payload = [], array $headers = [])
+    public function post(string $url, array $payload = [], array $headers = []): Response
     {
         $headers = array_merge(['Content-Type: application/jose+json'], $headers);
 
@@ -77,14 +65,14 @@ class Client
         return new Response($rawHeaders, $headers, $body, $error);
     }
 
-    private function attachRequestPayload(&$curlHandle, array $data)
+    private function attachRequestPayload(CurlHandle &$curlHandle, array $data): void
     {
         $encoded = json_encode($data);
 
         curl_setopt($curlHandle, CURLOPT_POSTFIELDS, $encoded);
     }
 
-    private function getCurlHandle(string $fullUrl, array $headers = [])
+    private function getCurlHandle(string $fullUrl, array $headers = []): CurlHandle
     {
         $curlHandle = curl_init();
 

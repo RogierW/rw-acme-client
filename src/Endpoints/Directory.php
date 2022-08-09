@@ -2,9 +2,11 @@
 
 namespace Rogierw\RwAcme\Endpoints;
 
+use Rogierw\RwAcme\Http\Response;
+
 class Directory extends Endpoint
 {
-    public function all()
+    public function all(): Response
     {
         return $this->client
             ->getHttpClient()

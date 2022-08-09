@@ -58,6 +58,16 @@ class Order extends Endpoint
 
         $response = $this->client->getHttpClient()->get($orderUrl);
 
+        if ($response->getHttpResponseCode() === 500) {
+            throw new RuntimeException($response->getBody());
+        }
+
+        if ($response->getHttpResponseCode() === 404) {
+            $this->client->logger('error', $response->getBody());
+
+            throw new RuntimeException('Order not found.');
+        }
+
         return OrderData::fromResponse($response, $account->url);
     }
 

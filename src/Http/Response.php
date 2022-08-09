@@ -6,21 +6,14 @@ use Rogierw\RwAcme\Support\Str;
 
 class Response
 {
-    private $rawHeaders;
-    private $headers;
-    private $body;
-    private $error;
+    public function __construct(
+        private string $rawHeaders,
+        private array $headers,
+        private array|string $body,
+        private string $error
+    ) {}
 
-    public function __construct($rawHeaders, $headers, $body, $error)
-    {
-        $this->rawHeaders = $rawHeaders;
-        $this->headers = $headers;
-        $this->body = $body;
-        $this->error = $error;
-    }
-
-    /** @return mixed */
-    public function getRawHeaders()
+    public function getRawHeaders(): array
     {
         $headers = explode("\n", $this->rawHeaders);
         $headersArr = [];
@@ -38,35 +31,30 @@ class Response
         return $headersArr;
     }
 
-    /** @return mixed */
-    public function getHeaders()
+    public function getHeaders(): array
     {
         return $this->headers;
     }
 
-    /** @return mixed */
-    public function getBody()
+    public function getBody(): array|string
     {
         return $this->body;
     }
 
-    /** @return bool */
-    public function hasBody()
+    public function hasBody(): bool
     {
         return $this->body != false;
     }
 
-    /** @return mixed */
-    public function getError()
+    public function getError(): string
     {
         return $this->error;
     }
 
-    /** @return null|int */
-    public function getHttpResponseCode()
+    public function getHttpResponseCode(): ?int
     {
         if (!isset($this->headers['http_code'])) {
-            return;
+            return null;
         }
 
         return (int) $this->headers['http_code'];

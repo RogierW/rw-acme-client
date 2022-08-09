@@ -7,12 +7,7 @@ use Rogierw\RwAcme\Support\KeyId;
 
 abstract class Endpoint
 {
-    protected $client;
-
-    public function __construct(Api $client)
-    {
-        $this->client = $client;
-    }
+    public function __construct(protected Api $client) {}
 
     protected function createKeyId(string $acountUrl, string $url, ?array $payload = null): array
     {

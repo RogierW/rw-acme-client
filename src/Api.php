@@ -17,26 +17,17 @@ class Api
     const PRODUCTION_URL = 'https://acme-v02.api.letsencrypt.org';
     const STAGING_URL = 'https://acme-staging-v02.api.letsencrypt.org';
 
-    /** @var string */
-    private $accountEmail;
-    /** @var string */
-    private $accountKeysPath;
-    /** @var string */
-    private $baseUrl;
-    /** @var LoggerInterface|null */
-    private $logger;
+    private string $baseUrl;
+    private Client $httpClient;
 
-    /** @var \Rogierw\RwAcme\Http\Client */
-    private $httpClient;
-
-    public function __construct(string $accountEmail, string $accountKeysPath, bool $staging = false, LoggerInterface $logger = null)
-    {
-        $this->accountEmail = $accountEmail;
-        $this->accountKeysPath = $accountKeysPath;
+    public function __construct(
+        private string $accountEmail,
+        private string $accountKeysPath,
+        bool $staging = false,
+        private ?LoggerInterface $logger = null
+    ) {
         $this->baseUrl = $staging ? self::STAGING_URL : self::PRODUCTION_URL;
-        $this->logger = $logger;
-
-        $this->httpClient = new Client($this->baseUrl);
+        $this->httpClient = new Client;
     }
 
     public function directory(): Directory

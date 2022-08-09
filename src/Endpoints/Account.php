@@ -74,6 +74,10 @@ class Account extends Endpoint
 
         $response = $this->client->getHttpClient()->post($newAccountUrl, $signedPayload);
 
+        if ($response->getHttpResponseCode() === 400) {
+            throw new RuntimeException($response->getBody());
+        }
+
         return AccountData::fromResponse($response);
     }
 
