@@ -7,9 +7,12 @@
 This library allows you to request, renew and revoke SSL certificates provided by Let's Encrypt.
 
 ## Requirements
-- PHP ^7.1 - ^8.0
+- PHP ^8.1
 - OpenSSL >= 1.0.1
 - cURL extension
+- JSON extension
+
+* **Note**: v2 of this package only supports `php:^8.1`. If you're looking for the older version, check out [v1](https://github.com/RogierW/rw-acme-client/tree/v1).
 
 ## Installation
 You can install the package via composer:
