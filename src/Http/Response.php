@@ -11,7 +11,8 @@ class Response
         private array $headers,
         private array|string $body,
         private string $error
-    ) {}
+    ) {
+    }
 
     public function getRawHeaders(): array
     {

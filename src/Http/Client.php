@@ -6,7 +6,9 @@ use CurlHandle;
 
 class Client
 {
-    public function __construct(private int $timeout = 10, private int $maxRedirects = 0) {}
+    public function __construct(private int $timeout = 10, private int $maxRedirects = 0)
+    {
+    }
 
     public function head(string $url): Response
     {
