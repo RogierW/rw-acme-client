@@ -2,25 +2,29 @@
 
 namespace Rogierw\RwAcme\Support;
 
+use OpenSSLAsymmetricKey;
 use RuntimeException;
 
 class OpenSsl
 {
-    public static function generatePrivateKey(): string
+    public static function generatePrivateKey(): OpenSSLAsymmetricKey
     {
-        $key = openssl_pkey_new([
+        return openssl_pkey_new([
             'private_key_bits' => 2048,
             'digest_alg'       => 'sha256',
         ]);
+    }
 
-        if (!openssl_pkey_export($key, $out)) {
+    public static function openSslKeyToString(OpenSSLAsymmetricKey $key): string
+    {
+        if (!openssl_pkey_export($key, $output)) {
             throw new RuntimeException('Exporting SSL key failed.');
         }
 
-        return trim($out);
+        return trim($output);
     }
 
-    public static function generateCsr(array $domains, string $privateKey): string
+    public static function generateCsr(array $domains, OpenSSLAsymmetricKey $privateKey): string
     {
         $dn = ['commonName' => $domains[0]];
 
