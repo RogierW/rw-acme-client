@@ -18,13 +18,18 @@ class CertificateBundleData extends DataTransferObject
         $certificate = '';
         $fullchain = '';
 
-        if (preg_match_all('~(-----BEGIN\sCERTIFICATE-----[\s\S]+?-----END\sCERTIFICATE-----)~i', $response->getBody(), $matches)) {
+        if (preg_match_all(
+            '~(-----BEGIN\sCERTIFICATE-----[\s\S]+?-----END\sCERTIFICATE-----)~i',
+            $response->getBody(),
+            $matches
+        )) {
             $certificate = $matches[0][0];
+            $matchesCount = count($matches[0]);
 
-            if (count($matches[0]) > 1) {
+            if ($matchesCount > 1) {
                 $fullchain = $matches[0][0] . "\n";
 
-                for ($i = 1; $i < count($matches[0]); $i++) {
+                for ($i = 1; $i < $matchesCount; $i++) {
                     $fullchain .= $matches[0][$i] . "\n";
                 }
             }
