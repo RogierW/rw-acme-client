@@ -13,7 +13,13 @@ class LocalChallengeTest
 
         $response = $httpClient->get($domain . '/.well-known/acme-challenge/' . $token);
 
-        if (trim($response->getBody()) === $keyAuthorization) {
+        $body = $response->getBody();
+
+        if (is_array($body)) {
+            $body = json_encode($body);
+        }
+
+        if (trim($body) === $keyAuthorization) {
             return;
         }
 
