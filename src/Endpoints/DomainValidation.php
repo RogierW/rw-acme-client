@@ -5,17 +5,15 @@ namespace Rogierw\RwAcme\Endpoints;
 use Rogierw\RwAcme\DTO\AccountData;
 use Rogierw\RwAcme\DTO\DomainValidationData;
 use Rogierw\RwAcme\DTO\OrderData;
-use Rogierw\RwAcme\Exceptions\DomainValidationException;
+use Rogierw\RwAcme\Enums\AuthorizationChallengeEnum;
 use Rogierw\RwAcme\Http\Response;
 use Rogierw\RwAcme\Support\Arr;
 use Rogierw\RwAcme\Support\JsonWebKey;
 use Rogierw\RwAcme\Support\LocalChallengeTest;
+use Rogierw\RwAcme\Support\Thumbprint;
 
 class DomainValidation extends Endpoint
 {
-    const TYPE_HTTP = 'http-01';
-    const TYPE_DNS = 'dns-01';
-
     /** @return DomainValidationData[] */
     public function status(OrderData $orderData): array
     {
@@ -38,18 +36,33 @@ class DomainValidation extends Endpoint
     }
 
     /** @param DomainValidationData[] $challenges */
-    public function getFileValidationData(array $challenges): array
+    public function getValidationData(array $challenges, ?AuthorizationChallengeEnum $authChallenge = null): array
     {
-        $thumbprint = JsonWebKey::thumbprint(JsonWebKey::compute($this->getAccountPrivateKey()));
+        $thumbprint = Thumbprint::make($this->getAccountPrivateKey());
 
         $authorizations = [];
         foreach ($challenges as $domainValidationData) {
-            if ($domainValidationData->file['status'] === 'pending') {
+            if ((is_null($authChallenge) || $authChallenge === AuthorizationChallengeEnum::HTTP)) {
                 $authorizations[] = [
-                    'type' => self::TYPE_HTTP,
                     'identifier' => $domainValidationData->identifier['value'],
+                    'type' => $domainValidationData->file['type'],
                     'filename' => $domainValidationData->file['token'],
                     'content' => $domainValidationData->file['token'] . '.' . $thumbprint,
+                ];
+            }
+
+            if ((is_null($authChallenge) || $authChallenge === AuthorizationChallengeEnum::DNS)) {
+                $value = hash(
+                    'sha256',
+                    $domainValidationData->dns['token'] . '.' . $thumbprint,
+                    true
+                );
+
+                $authorizations[] = [
+                    'identifier' => $domainValidationData->identifier['value'],
+                    'type' => $domainValidationData->dns['type'],
+                    'name' => '_acme-challenge',
+                    'value' => str_replace('=', '', strtr(base64_encode($value), '+/', '-_')),
                 ];
             }
         }
@@ -58,17 +71,24 @@ class DomainValidation extends Endpoint
     }
 
     /** @throws \Rogierw\RwAcme\Exceptions\DomainValidationException */
-    public function start(AccountData $accountData, DomainValidationData $domainValidation, bool $localTest = true): Response
+    public function start(
+        AccountData $accountData,
+        DomainValidationData $domainValidation,
+        AuthorizationChallengeEnum $authChallenge,
+        bool $localTest = true
+    ): Response
     {
-        $this->client->logger(
-            'info',
-            'Start HTTP challenge for ' . Arr::get($domainValidation->identifier, 'value', '')
-        );
+        $this->client->logger('info', sprintf(
+            'Start %s challenge for %s',
+            $authChallenge->value,
+            Arr::get($domainValidation->identifier, 'value', '')
+        ));
 
+        $type = $authChallenge === AuthorizationChallengeEnum::DNS ? 'dns' : 'file';
         $thumbprint = JsonWebKey::thumbprint(JsonWebKey::compute($this->getAccountPrivateKey()));
-        $keyAuthorization = $domainValidation->file['token'] . '.' . $thumbprint;
+        $keyAuthorization = $domainValidation->{$type}['token'] . '.' . $thumbprint;
 
-        if ($localTest) {
+        if ($localTest && $authChallenge === AuthorizationChallengeEnum::HTTP) {
             LocalChallengeTest::http(
                 $domainValidation->identifier['value'],
                 $domainValidation->file['token'],
@@ -80,20 +100,16 @@ class DomainValidation extends Endpoint
             'keyAuthorization' => $keyAuthorization,
         ];
 
-        $data = $this->createKeyId($accountData->url, $domainValidation->file['url'], $payload);
+        $data = $this->createKeyId($accountData->url, $domainValidation->{$type}['url'], $payload);
 
-        return $this->client->getHttpClient()->post($domainValidation->file['url'], $data);
+        return $this->client->getHttpClient()->post($domainValidation->{$type}['url'], $data);
     }
 
-    public function challengeSucceeded(OrderData $orderData, string $challengeType): bool
+    public function allChallengesPassed(OrderData $orderData): bool
     {
-        if ($challengeType !== self::TYPE_HTTP) {
-            throw DomainValidationException::invalidChallengeType($challengeType);
-        }
-
         $count = 0;
         while (($status = $this->status($orderData)) && $count < 4) {
-            if ($challengeType === self::TYPE_HTTP && $this->httpChallengeSucceeded($status)) {
+            if ($this->challengeSucceeded($status)) {
                 break;
             }
 
@@ -112,18 +128,21 @@ class DomainValidation extends Endpoint
     }
 
     /** @param DomainValidationData[] $domainValidation */
-    private function httpChallengeSucceeded(array $domainValidation): bool
+    private function challengeSucceeded(array $domainValidation): bool
     {
-        // Verify if all HTTP challenges has been passed.
+        // Verify if the challenges has been passed.
         foreach ($domainValidation as $status) {
-            $this->client->logger('info', "Check HTTP challenge of {$status->identifier['value']}.");
+            $this->client->logger(
+                'info',
+                "Check {$status->identifier['type']} challenge of {$status->identifier['value']}."
+            );
 
             if (!$status->isValid()) {
                 return false;
             }
         }
 
-        $this->client->logger('info', 'HTTP challenge has been passed.');
+        $this->client->logger('info', "Challenge has been passed.");
 
         return true;
     }

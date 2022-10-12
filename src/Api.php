@@ -21,7 +21,7 @@ class Api
     private Client $httpClient;
 
     public function __construct(
-        private string $accountEmail,
+        private readonly string $accountEmail,
         private string $accountKeysPath,
         bool $staging = false,
         private ?LoggerInterface $logger = null
@@ -86,6 +86,13 @@ class Api
     public function getHttpClient(): Client
     {
         return $this->httpClient;
+    }
+
+    public function setLogger(LoggerInterface $logger): self
+    {
+        $this->logger = $logger;
+
+        return $this;
     }
 
     public function logger(string $level, string $message): void
