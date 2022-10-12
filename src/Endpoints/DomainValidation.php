@@ -76,8 +76,7 @@ class DomainValidation extends Endpoint
         DomainValidationData $domainValidation,
         AuthorizationChallengeEnum $authChallenge,
         bool $localTest = true
-    ): Response
-    {
+    ): Response {
         $this->client->logger('info', sprintf(
             'Start %s challenge for %s',
             $authChallenge->value,
@@ -142,7 +141,7 @@ class DomainValidation extends Endpoint
             }
         }
 
-        $this->client->logger('info', "Challenge has been passed.");
+        $this->client->logger('info', 'Challenge has been passed.');
 
         return true;
     }
