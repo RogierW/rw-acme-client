@@ -86,7 +86,7 @@ http://example.com/.well-known/acme-challenge/sqQnDYNNywpkwuHeU4b4FTPI2mwSrDF13t
 Get the name and the value for the TXT record:
 ```php
 // Get the data for the DNS challenge.
-$validationData = $client->domainValidation()->getValidationData($validationStatus, AuthorizationChallengeEnum::HTTP);
+$validationData = $client->domainValidation()->getValidationData($validationStatus, AuthorizationChallengeEnum::DNS);
 ```
 
 This returns an array:
