@@ -59,7 +59,7 @@ $validationStatus = $client->domainValidation()->status($order);
 Get the name and content for the validation file:
 ```php
 // Get the data for the HTTP challenge; filename and content.
-$validationData = $client->domainValidation()->getFileValidationData($validationStatus);
+$validationData = $client->domainValidation()->getValidationData($validationStatus, AuthorizationChallengeEnum::HTTP);
 ```
 
 This returns an array:
@@ -82,14 +82,44 @@ http://example.com/.well-known/acme-challenge/sqQnDYNNywpkwuHeU4b4FTPI2mwSrDF13t
 ```
 
 #### dns-01
-@TODO
+
+Get the name and the value for the TXT record:
+```php
+// Get the data for the DNS challenge.
+$validationData = $client->domainValidation()->getValidationData($validationStatus, AuthorizationChallengeEnum::DNS);
+```
+
+This returns an array:
+```php
+Array
+(
+    [0] => Array
+        (
+            [type] => dns-01
+            [identifier] => example.com
+            [name] => _acme-challenge
+            [value] => 8hSNdxGNkx4MI7ZN5F8uZj3cTSMX92SGMCMHQMh0cMA
+        )
+)
+```
 
 #### Start domain validation
+
+##### http-01
 ```php
 try {
-    $client->domainValidation()->start($account, $validationStatus[0]);
+    $client->domainValidation()->start($account, $validationStatus[0], AuthorizationChallengeEnum::HTTP);
 } catch (DomainValidationException $exception) {
     // The local HTTP challenge test has been failed...
+}
+```
+
+##### dns-01
+```php
+try {
+    $client->domainValidation()->start($account, $validationStatus[0], AuthorizationChallengeEnum::DNS);
+} catch (DomainValidationException $exception) {
+    // The local DNS challenge test has been failed...
 }
 ```
 

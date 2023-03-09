@@ -2,7 +2,7 @@
 
 namespace Rogierw\RwAcme\DTO;
 
-use Rogierw\RwAcme\Endpoints\DomainValidation;
+use Rogierw\RwAcme\Enums\AuthorizationChallengeEnum;
 use Rogierw\RwAcme\Http\Response;
 use Rogierw\RwAcme\Support\Arr;
 use Spatie\DataTransferObject\DataTransferObject;
@@ -22,17 +22,17 @@ class DomainValidationData extends DataTransferObject
             'identifier' => $response->getBody()['identifier'],
             'status' => $response->getBody()['status'],
             'expires' => $response->getBody()['expires'],
-            'file' => self::getValidationByType($response->getBody()['challenges'], DomainValidation::TYPE_HTTP),
-            'dns' => self::getValidationByType($response->getBody()['challenges'], DomainValidation::TYPE_DNS),
+            'file' => self::getValidationByType($response->getBody()['challenges'], AuthorizationChallengeEnum::HTTP),
+            'dns' => self::getValidationByType($response->getBody()['challenges'], AuthorizationChallengeEnum::DNS),
             'validationRecord' => Arr::get($response->getBody(), 'validationRecord', []),
         ]);
     }
 
-    private static function getValidationByType(array $haystack, string $type): array
+    private static function getValidationByType(array $haystack, AuthorizationChallengeEnum $authChallenge): array
     {
         foreach ($haystack as $key => $data) {
-            if ($data['type'] === $type) {
-                return $haystack[$key];
+            if ($data['type'] === $authChallenge->value) {
+                return $data;
             }
         }
 
@@ -73,12 +73,12 @@ class DomainValidationData extends DataTransferObject
             $data = [];
 
             $data[] = [
-                'domainValidationType' => DomainValidation::TYPE_HTTP,
+                'domainValidationType' => AuthorizationChallengeEnum::HTTP->value,
                 'error' => Arr::get($this->file, 'error'),
             ];
 
             $data[] = [
-                'domainValidationType' => DomainValidation::TYPE_DNS,
+                'domainValidationType' => AuthorizationChallengeEnum::DNS->value,
                 'error' => Arr::get($this->dns, 'error'),
             ];
 
