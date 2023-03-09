@@ -8,6 +8,7 @@ use Rogierw\RwAcme\DTO\OrderData;
 use Rogierw\RwAcme\Enums\AuthorizationChallengeEnum;
 use Rogierw\RwAcme\Http\Response;
 use Rogierw\RwAcme\Support\Arr;
+use Rogierw\RwAcme\Support\DnsDigest;
 use Rogierw\RwAcme\Support\JsonWebKey;
 use Rogierw\RwAcme\Support\LocalChallengeTest;
 use Rogierw\RwAcme\Support\Thumbprint;
@@ -52,17 +53,11 @@ class DomainValidation extends Endpoint
             }
 
             if ((is_null($authChallenge) || $authChallenge === AuthorizationChallengeEnum::DNS)) {
-                $value = hash(
-                    'sha256',
-                    $domainValidationData->dns['token'] . '.' . $thumbprint,
-                    true
-                );
-
                 $authorizations[] = [
                     'identifier' => $domainValidationData->identifier['value'],
                     'type' => $domainValidationData->dns['type'],
                     'name' => '_acme-challenge',
-                    'value' => str_replace('=', '', strtr(base64_encode($value), '+/', '-_')),
+                    'value' => DnsDigest::make($domainValidationData->dns['token'], $thumbprint),
                 ];
             }
         }
@@ -87,12 +82,22 @@ class DomainValidation extends Endpoint
         $thumbprint = JsonWebKey::thumbprint(JsonWebKey::compute($this->getAccountPrivateKey()));
         $keyAuthorization = $domainValidation->{$type}['token'] . '.' . $thumbprint;
 
-        if ($localTest && $authChallenge === AuthorizationChallengeEnum::HTTP) {
-            LocalChallengeTest::http(
-                $domainValidation->identifier['value'],
-                $domainValidation->file['token'],
-                $keyAuthorization
-            );
+        if ($localTest) {
+            if ($authChallenge === AuthorizationChallengeEnum::HTTP) {
+                LocalChallengeTest::http(
+                    $domainValidation->identifier['value'],
+                    $domainValidation->file['token'],
+                    $keyAuthorization
+                );
+            }
+
+            if ($authChallenge === AuthorizationChallengeEnum::DNS) {
+                LocalChallengeTest::dns(
+                    $domainValidation->identifier['value'],
+                    '_acme-challenge',
+                    DnsDigest::make($domainValidation->{$type}['token'], $thumbprint),
+                );
+            }
         }
 
         $payload = [

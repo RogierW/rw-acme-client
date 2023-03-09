@@ -28,4 +28,15 @@ class LocalChallengeTest
             $response->getHttpResponseCode() ?? 'unknown'
         );
     }
+
+    public static function dns(string $domain, string $name, string $value): void
+    {
+        $response = @dns_get_record(sprintf('%s.%s', $name, $domain), DNS_TXT);
+
+        if (! empty($response[0]['txt']) && $response[0]['txt'] === $value) {
+            return;
+        }
+
+        throw DomainValidationException::localDnsChallengeTestFailed($domain);
+    }
 }
