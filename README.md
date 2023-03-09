@@ -131,7 +131,7 @@ $csr = \Rogierw\RwAcme\Support\OpenSsl::generateCsr(['example.com'], $privateKey
 
 #### Finalizing order
 ```php
-if ($order->isReady() && $client->domainValidation()->challengeSucceeded($order, DomainValidation::TYPE_HTTP)) {
+if ($order->isReady() && $client->domainValidation()->allChallengesPassed($order)) {
     $client->order()->finalize($order, $csr);
 }
 ```
