@@ -33,7 +33,7 @@ class LocalChallengeTest
     {
         $response = @dns_get_record(sprintf('%s.%s', $name, $domain), DNS_TXT);
 
-        if (! empty($response[0]['txt']) && $response[0]['txt'] === $value) {
+        if (!empty($response[0]['txt']) && $response[0]['txt'] === $value) {
             return;
         }
 
