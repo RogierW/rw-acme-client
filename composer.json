@@ -17,7 +17,7 @@
     "ext-json": "*",
     "ext-mbstring": "*",
     "ext-openssl": "*",
-    "psr/log": "^1.1",
+    "psr/log": "^2.0",
     "spatie/data-transfer-object": "^3.8"
   },
   "require-dev": {
