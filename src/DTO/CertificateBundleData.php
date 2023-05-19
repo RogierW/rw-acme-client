@@ -10,7 +10,8 @@ class CertificateBundleData extends Data
     public function __construct(
         public string $certificate,
         public string $fullchain,
-    ) {}
+    ) {
+    }
 
     public static function fromResponse(Response $response): CertificateBundleData
     {

@@ -18,7 +18,8 @@ class AccountData extends Data
         public string $agreement,
         public string $initialIp,
         public string $createdAt,
-    ) {}
+    ) {
+    }
 
     public static function fromResponse(Response $response): AccountData
     {

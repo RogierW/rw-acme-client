@@ -20,7 +20,8 @@ class OrderData extends Data
         public string $accountUrl,
         public string|null $certificateUrl,
         public bool $finalized = false,
-    ) {}
+    ) {
+    }
 
     public static function fromResponse(Response $response, string $accountUrl = ''): OrderData
     {
