@@ -16,7 +16,8 @@ class DomainValidationData extends Data
         public array $file,
         public array $dns,
         public array $validationRecord,
-    ) {}
+    ) {
+    }
 
     public static function fromResponse(Response $response): DomainValidationData
     {
