@@ -5,32 +5,34 @@ namespace Rogierw\RwAcme\DTO;
 use Rogierw\RwAcme\Http\Response;
 use Rogierw\RwAcme\Support\Arr;
 use Rogierw\RwAcme\Support\Url;
-use Spatie\DataTransferObject\DataTransferObject;
+use Spatie\LaravelData\Data;
 
-class AccountData extends DataTransferObject
+class AccountData extends Data
 {
-    public $id;
-    public $url;
-    public $key;
-    public $status;
-    public $contact;
-    public $agreement;
-    public $initialIp;
-    public $createdAt;
+    public function __construct(
+        public string $id,
+        public string $url,
+        public array $key,
+        public string $status,
+        public array $contact,
+        public string $agreement,
+        public string $initialIp,
+        public string $createdAt,
+    ) {}
 
-    public static function fromResponse(Response $response): self
+    public static function fromResponse(Response $response): AccountData
     {
         $url = trim(Arr::get($response->getRawHeaders(), 'Location', ''));
 
-        return new self([
-            'id'        => Url::extractId($url),
-            'url'       => $url,
-            'key'       => $response->getBody()['key'],
-            'status'    => $response->getBody()['status'],
-            'contact'   => $response->getBody()['contact'],
-            'agreement' => $response->getBody()['agreement'] ?? '',
-            'initialIp' => $response->getBody()['initialIp'],
-            'createdAt' => $response->getBody()['createdAt'],
-        ]);
+        return new self(
+            id: Url::extractId($url),
+            url: $url,
+            key: $response->getBody()['key'],
+            status: $response->getBody()['status'],
+            contact: $response->getBody()['contact'],
+            agreement: $response->getBody()['agreement'] ?? '',
+            initialIp: $response->getBody()['initialIp'],
+            createdAt: $response->getBody()['createdAt']
+        );
     }
 }

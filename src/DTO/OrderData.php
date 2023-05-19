@@ -5,23 +5,24 @@ namespace Rogierw\RwAcme\DTO;
 use Rogierw\RwAcme\Http\Response;
 use Rogierw\RwAcme\Support\Arr;
 use Rogierw\RwAcme\Support\Url;
-use Spatie\DataTransferObject\DataTransferObject;
+use Spatie\LaravelData\Data;
 
-class OrderData extends DataTransferObject
+class OrderData extends Data
 {
-    public $id;
-    public $url;
-    public $status;
-    public $expires;
-    public $identifiers;
-    public $domainValidationUrls;
-    public $finalizeUrl;
-    public $accountUrl;
-    public $certificateUrl;
+    public function __construct(
+        public string $id,
+        public string $url,
+        public string $status,
+        public string $expires,
+        public array $identifiers,
+        public array $domainValidationUrls,
+        public string $finalizeUrl,
+        public string $accountUrl,
+        public string|null $certificateUrl,
+        public bool $finalized = false,
+    ) {}
 
-    private $finalized = false;
-
-    public static function fromResponse(Response $response, string $accountUrl = ''): self
+    public static function fromResponse(Response $response, string $accountUrl = ''): OrderData
     {
         $url = Arr::get($response->getRawHeaders(), 'Location');
 
@@ -31,17 +32,17 @@ class OrderData extends DataTransferObject
 
         $url = trim(rtrim($url, '?'));
 
-        return new self([
-            'id'                   => Url::extractId($url),
-            'url'                  => $url,
-            'status'               => $response->getBody()['status'],
-            'expires'              => $response->getBody()['expires'],
-            'identifiers'          => $response->getBody()['identifiers'],
-            'domainValidationUrls' => $response->getBody()['authorizations'],
-            'finalizeUrl'          => $response->getBody()['finalize'],
-            'certificateUrl'       => Arr::get($response->getBody(), 'certificate'),
-            'accountUrl'           => $accountUrl,
-        ]);
+        return new self(
+            id: Url::extractId($url),
+            url: $url,
+            status: $response->getBody()['status'],
+            expires: $response->getBody()['expires'],
+            identifiers: $response->getBody()['identifiers'],
+            domainValidationUrls: $response->getBody()['authorizations'],
+            finalizeUrl: $response->getBody()['finalize'],
+            accountUrl: $accountUrl,
+            certificateUrl: Arr::get($response->getBody(), 'certificate'),
+        );
     }
 
     public function setCertificateUrl(string $url): void

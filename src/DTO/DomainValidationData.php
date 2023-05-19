@@ -5,27 +5,29 @@ namespace Rogierw\RwAcme\DTO;
 use Rogierw\RwAcme\Enums\AuthorizationChallengeEnum;
 use Rogierw\RwAcme\Http\Response;
 use Rogierw\RwAcme\Support\Arr;
-use Spatie\DataTransferObject\DataTransferObject;
+use Spatie\LaravelData\Data;
 
-class DomainValidationData extends DataTransferObject
+class DomainValidationData extends Data
 {
-    public $identifier;
-    public $status;
-    public $expires;
-    public $file;
-    public $dns;
-    public $validationRecord;
+    public function __construct(
+        public array $identifier,
+        public string $status,
+        public string $expires,
+        public array $file,
+        public array $dns,
+        public array $validationRecord,
+    ) {}
 
-    public static function fromResponse(Response $response): self
+    public static function fromResponse(Response $response): DomainValidationData
     {
-        return new self([
-            'identifier' => $response->getBody()['identifier'],
-            'status' => $response->getBody()['status'],
-            'expires' => $response->getBody()['expires'],
-            'file' => self::getValidationByType($response->getBody()['challenges'], AuthorizationChallengeEnum::HTTP),
-            'dns' => self::getValidationByType($response->getBody()['challenges'], AuthorizationChallengeEnum::DNS),
-            'validationRecord' => Arr::get($response->getBody(), 'validationRecord', []),
-        ]);
+        return new self(
+            identifier: $response->getBody()['identifier'],
+            status: $response->getBody()['status'],
+            expires: $response->getBody()['expires'],
+            file: self::getValidationByType($response->getBody()['challenges'], AuthorizationChallengeEnum::HTTP),
+            dns: self::getValidationByType($response->getBody()['challenges'], AuthorizationChallengeEnum::DNS),
+            validationRecord: Arr::get($response->getBody(), 'validationRecord', []),
+        );
     }
 
     private static function getValidationByType(array $haystack, AuthorizationChallengeEnum $authChallenge): array

@@ -3,17 +3,16 @@
 namespace Rogierw\RwAcme\DTO;
 
 use Rogierw\RwAcme\Http\Response;
-use Spatie\DataTransferObject\DataTransferObject;
+use Spatie\LaravelData\Data;
 
-class CertificateBundleData extends DataTransferObject
+class CertificateBundleData extends Data
 {
-    /** @var string */
-    public $certificate;
+    public function __construct(
+        public string $certificate,
+        public string $fullchain,
+    ) {}
 
-    /** @var string */
-    public $fullchain;
-
-    public static function fromResponse(Response $response): self
+    public static function fromResponse(Response $response): CertificateBundleData
     {
         $certificate = '';
         $fullchain = '';
@@ -35,6 +34,6 @@ class CertificateBundleData extends DataTransferObject
             }
         }
 
-        return new self(compact('certificate', 'fullchain'));
+        return new self(certificate: $certificate, fullchain: $fullchain);
     }
 }
