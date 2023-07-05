@@ -37,10 +37,13 @@ if (!$client->account()->exists()) {
 $account = $client->account()->get();
 ```
 
-#### Creating an order
+### Creating an order
 ```php
 $order = $client->order()->new($account, ['example.com']);
 ```
+
+#### Renewal
+Simply create a new order to renew an existing certificate as described above. Ensure that you use the same account as you did for the initial request.
 
 #### Getting an order
 ```php
