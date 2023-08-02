@@ -97,7 +97,11 @@ class Order extends Endpoint
         $response = $this->client->getHttpClient()->post($orderData->finalizeUrl, $signedPayload);
 
         if ($response->getHttpResponseCode() === 200) {
-            $orderData->setCertificateUrl($response->getBody()['certificate']);
+            $body = $response->getBody();
+
+            if (isset($body['certificate'])) {
+                $orderData->setCertificateUrl($body['certificate']);
+            }
 
             return true;
         }
