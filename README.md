@@ -6,6 +6,8 @@
 
 This library allows you to request, renew and revoke SSL certificates provided by Let's Encrypt.
 
+If you're looking for an easy-to-use CLI tool for managing your LE certificates, take a look at the [RW ACME CLI](https://github.com/RogierW/rw-acme-cli) project.
+
 ## Requirements
 - PHP ^8.1
 - OpenSSL >= 1.0.1
