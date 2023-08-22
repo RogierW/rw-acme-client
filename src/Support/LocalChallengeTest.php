@@ -33,10 +33,8 @@ class LocalChallengeTest
     {
         $response = @dns_get_record(sprintf('%s.%s', $name, $domain), DNS_TXT);
 
-        if (!empty($response[0]['txt']) && $response[0]['txt'] === $value) {
-            return;
+        if (!in_array($value, array_column($response, 'txt'), true)) {
+            throw DomainValidationException::localDnsChallengeTestFailed($domain);
         }
-
-        throw DomainValidationException::localDnsChallengeTestFailed($domain);
     }
 }
