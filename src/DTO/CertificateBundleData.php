@@ -10,6 +10,7 @@ class CertificateBundleData extends Data
     public function __construct(
         public string $certificate,
         public string $fullchain,
+        public string $caBundle,
     ) {
     }
 
@@ -17,6 +18,7 @@ class CertificateBundleData extends Data
     {
         $certificate = '';
         $fullchain = '';
+        $caBundle = '';
 
         if (preg_match_all(
             '~(-----BEGIN\sCERTIFICATE-----[\s\S]+?-----END\sCERTIFICATE-----)~i',
@@ -30,11 +32,12 @@ class CertificateBundleData extends Data
                 $fullchain = $matches[0][0] . "\n";
 
                 for ($i = 1; $i < $matchesCount; $i++) {
+                    $caBundle .= $matches[0][$i] . "\n";
                     $fullchain .= $matches[0][$i] . "\n";
                 }
             }
         }
 
-        return new self(certificate: $certificate, fullchain: $fullchain);
+        return new self(certificate: $certificate, fullchain: $fullchain, caBundle: $caBundle);
     }
 }
