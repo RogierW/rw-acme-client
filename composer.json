@@ -21,7 +21,8 @@
     "spatie/laravel-data": "^3.5"
   },
   "require-dev": {
-    "larapack/dd": "^1.0"
+    "larapack/dd": "^1.0",
+    "pestphp/pest": "^2.24"
   },
   "autoload": {
     "psr-4": {
@@ -32,6 +33,9 @@
     ]
   },
   "config": {
-    "sort-packages": true
+    "sort-packages": true,
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    }
   }
 }

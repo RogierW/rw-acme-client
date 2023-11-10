@@ -6,7 +6,9 @@ use Rogierw\RwAcme\Exceptions\LetsEncryptClientException;
 
 class JsonWebKey
 {
-    public static function compute(string $accountKey): array
+    public static function compute(
+        #[\SensitiveParameter] string $accountKey
+    ): array
     {
         $privateKey = openssl_pkey_get_private($accountKey);
 
@@ -17,14 +19,14 @@ class JsonWebKey
         $details = openssl_pkey_get_details($privateKey);
 
         return [
-            'e'   => Base64::urlSafeEncode($details['rsa']['e']),
+            'e' => Base64::urlSafeEncode($details['rsa']['e']),
             'kty' => 'RSA',
-            'n'   => Base64::urlSafeEncode($details['rsa']['n']),
+            'n' => Base64::urlSafeEncode($details['rsa']['n']),
         ];
     }
 
     public static function thumbprint(array $jwk): string
     {
-        return Base64::urlSafeEncode(hash('sha256', json_encode($jwk), true));
+        return Base64::urlSafeEncode(hash('sha256', json_encode($jwk, JSON_THROW_ON_ERROR), true));
     }
 }

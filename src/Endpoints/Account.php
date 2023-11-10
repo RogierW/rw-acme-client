@@ -3,7 +3,6 @@
 namespace Rogierw\RwAcme\Endpoints;
 
 use Rogierw\RwAcme\DTO\AccountData;
-use Rogierw\RwAcme\Support\CryptRSA;
 use Rogierw\RwAcme\Exceptions\LetsEncryptClientException;
 use Rogierw\RwAcme\Support\JsonWebSignature;
 
@@ -11,21 +10,12 @@ class Account extends Endpoint
 {
     public function exists(): bool
     {
-        if (!is_dir($this->client->getAccountKeysPath())) {
-            return false;
-        }
-
-        if (is_file($this->client->getAccountKeysPath() . 'private.pem')
-            && is_file($this->client->getAccountKeysPath() . 'public.pem')) {
-            return true;
-        }
-
-        return false;
+        return $this->client->keyStorage->exists();
     }
 
     public function create(): AccountData
     {
-        $this->initAccountDirectory();
+        $this->client->keyStorage->generateNewKeys();
 
         $payload = [
             'contact'              => $this->buildContactPayload($this->client->getAccountEmail()),
@@ -38,7 +28,7 @@ class Account extends Endpoint
             $payload,
             $newAccountUrl,
             $this->client->nonce()->getNew(),
-            $this->client->getAccountKeysPath()
+            $this->client->keyStorage->getPrivateKey(),
         );
 
         $response = $this->client->getHttpClient()->post(
@@ -69,7 +59,7 @@ class Account extends Endpoint
             $payload,
             $newAccountUrl,
             $this->client->nonce()->getNew(),
-            $this->client->getAccountKeysPath()
+            $this->client->keyStorage->getPrivateKey(),
         );
 
         $response = $this->client->getHttpClient()->post($newAccountUrl, $signedPayload);
@@ -79,21 +69,6 @@ class Account extends Endpoint
         }
 
         return AccountData::fromResponse($response);
-    }
-
-    private function initAccountDirectory(string $keyType = 'RSA'): void
-    {
-        if ($keyType !== 'RSA') {
-            throw new RuntimeException('Key type is not supported.');
-        }
-
-        if (!is_dir($this->client->getAccountKeysPath())) {
-            mkdir($this->client->getAccountKeysPath());
-        }
-
-        if ($keyType === 'RSA') {
-            CryptRSA::generate($this->client->getAccountKeysPath());
-        }
     }
 
     private function buildContactPayload(string $email): array

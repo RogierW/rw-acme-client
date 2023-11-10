@@ -4,15 +4,21 @@ namespace Rogierw\RwAcme\Support;
 
 class KeyId
 {
-    public static function generate(string $accountKeysPath, string $kid, string $url, string $nonce, ?array $payload = null): array
+    public static function generate(
+        #[\SensitiveParameter] string $accountPrivateKey,
+        string                        $kid,
+        string                        $url,
+        string                        $nonce,
+        ?array                        $payload = null
+    ): array
     {
-        $privateKey = openssl_pkey_get_private(file_get_contents($accountKeysPath . 'private.pem'));
+        $privateKey = openssl_pkey_get_private($accountPrivateKey);
 
         $data = [
-            'alg'   => 'RS256',
-            'kid'   => $kid,
+            'alg' => 'RS256',
+            'kid' => $kid,
             'nonce' => $nonce,
-            'url'   => $url,
+            'url' => $url,
         ];
 
         $payload = is_array($payload)
@@ -23,7 +29,7 @@ class KeyId
         $protected64 = Base64::urlSafeEncode(json_encode($data));
 
         openssl_sign(
-            $protected64 . '.' . $payload64,
+            $protected64.'.'.$payload64,
             $signed,
             $privateKey,
             'SHA256'
@@ -33,7 +39,7 @@ class KeyId
 
         return [
             'protected' => $protected64,
-            'payload'   => $payload64,
+            'payload' => $payload64,
             'signature' => $signed64,
         ];
     }

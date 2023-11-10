@@ -11,11 +11,11 @@ abstract class Endpoint
     {
     }
 
-    protected function createKeyId(string $acountUrl, string $url, ?array $payload = null): array
+    protected function createKeyId(string $accountUrl, string $url, ?array $payload = null): array
     {
         return KeyId::generate(
-            $this->client->getAccountKeysPath(),
-            $acountUrl,
+            $this->client->keyStorage->getPrivateKey(),
+            $accountUrl,
             $url,
             $this->client->nonce()->getNew(),
             $payload
@@ -24,6 +24,6 @@ abstract class Endpoint
 
     protected function getAccountPrivateKey(): string
     {
-        return file_get_contents($this->client->getAccountKeysPath() . 'private.pem');
+        return $this->client->keyStorage->getPrivateKey();
     }
 }
