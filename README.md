@@ -26,8 +26,22 @@ You can install the package via composer:
 You can create an instance of `Rogierw\RwAcme\Api` client.
 
 ```php
-$client = new Api('test@example.com', __DIR__ . '/__account');
+$client = new Api(__DIR__ . '/__account', 'test@example.com');
+// or with a custom key storage:
+$myKeyStore = new MyKeyStore();
+$client = new Api($myKeyStore, 'test@example.com');
 ```
+
+Also, you can create a client instance without specifying an account name (email address):
+```php
+$client = new Api(__DIR__ . '/__account'); // or: $client = new Api($myKeyStore); 
+
+// You can later set the account name:
+$client->useAccount('test@example.com');
+```
+
+> Please note that **setting an account name is required** before making any of the calls detailed below. 
+> If you don't set an account name, the client will throw an exception.
 
 ### Creating an account
 ```php
