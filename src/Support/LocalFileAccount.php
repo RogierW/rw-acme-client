@@ -1,19 +1,40 @@
 <?php
 
-namespace Rogierw\RwAcme\Support\KeyStorage;
+namespace Rogierw\RwAcme\Support;
 
 use Rogierw\RwAcme\Exceptions\LetsEncryptClientException;
-use Rogierw\RwAcme\Interfaces\KeyStorageInterface;
-use Rogierw\RwAcme\Support\CryptRSA;
+use Rogierw\RwAcme\Interfaces\AcmeAccountInterface;
 
-class FileKeyStorage implements KeyStorageInterface
+class LocalFileAccount implements AcmeAccountInterface
 {
     private string $accountName;
+    private string $emailAddress;
 
-    public function __construct(private string $accountKeysPath)
+    public function __construct(private string $accountKeysPath, string $emailAddress = null)
     {
         // Make sure the path ends with a slash.
         $this->accountKeysPath = rtrim($this->accountKeysPath, '/').'/';
+
+        if ($emailAddress !== null) {
+            $this->setEmailAddress($emailAddress);
+        }
+    }
+
+    public function setEmailAddress(string $emailAddress): self
+    {
+        $alphaNumAccountName = preg_replace('/[^a-zA-Z0-9\-]/', '_', $emailAddress);
+        // Prepend a hash to prevent collisions.
+        $shortHash = substr(hash('sha256', $emailAddress), 0, 16);
+
+        $this->emailAddress = $emailAddress;
+        $this->accountName = $shortHash.'_'.$alphaNumAccountName;
+
+        return $this;
+    }
+
+    public function getEmailAddress(): string
+    {
+        return $this->emailAddress;
     }
 
     public function getPrivateKey(): string
@@ -63,18 +84,6 @@ class FileKeyStorage implements KeyStorageInterface
         }
 
         return true;
-    }
-
-    public function setAccountName(string $accountName): self
-    {
-        $this->accountName = $accountName;
-
-        return $this;
-    }
-
-    public function getAccountName(): string
-    {
-        return $this->accountName;
     }
 
     protected function getKey(string $type): string

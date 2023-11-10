@@ -14,7 +14,7 @@ abstract class Endpoint
     protected function createKeyId(string $accountUrl, string $url, ?array $payload = null): array
     {
         return KeyId::generate(
-            $this->client->keyStorage->getPrivateKey(),
+            $this->client->localAccount()->getPrivateKey(),
             $accountUrl,
             $url,
             $this->client->nonce()->getNew(),
@@ -24,6 +24,6 @@ abstract class Endpoint
 
     protected function getAccountPrivateKey(): string
     {
-        return $this->client->keyStorage->getPrivateKey();
+        return $this->client->localAccount()->getPrivateKey();
     }
 }

@@ -10,15 +10,15 @@ class Account extends Endpoint
 {
     public function exists(): bool
     {
-        return $this->client->keyStorage->exists();
+        return $this->client->localAccount()->exists();
     }
 
     public function create(): AccountData
     {
-        $this->client->keyStorage->generateNewKeys();
+        $this->client->localAccount()->generateNewKeys();
 
         $payload = [
-            'contact'              => $this->buildContactPayload($this->client->getAccountEmail()),
+            'contact'              => $this->buildContactPayload($this->client->localAccount()->getEmailAddress()),
             'termsOfServiceAgreed' => true,
         ];
 
@@ -28,7 +28,7 @@ class Account extends Endpoint
             $payload,
             $newAccountUrl,
             $this->client->nonce()->getNew(),
-            $this->client->keyStorage->getPrivateKey(),
+            $this->client->localAccount()->getPrivateKey(),
         );
 
         $response = $this->client->getHttpClient()->post(
@@ -59,7 +59,7 @@ class Account extends Endpoint
             $payload,
             $newAccountUrl,
             $this->client->nonce()->getNew(),
-            $this->client->keyStorage->getPrivateKey(),
+            $this->client->localAccount()->getPrivateKey(),
         );
 
         $response = $this->client->getHttpClient()->post($newAccountUrl, $signedPayload);
