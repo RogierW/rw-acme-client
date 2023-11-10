@@ -30,7 +30,7 @@ $localAccount = new \Rogierw\RwAcme\Support\LocalFileAccount(__DIR__.'/__account
 $client = new Api($localAccount);
 ```
 
-You could also create a client and pass the user data class later:
+You could also create a client and pass the local account data later:
 
 ```php
 $client = new Api();
