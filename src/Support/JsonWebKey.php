@@ -2,11 +2,17 @@
 
 namespace Rogierw\RwAcme\Support;
 
+use Rogierw\RwAcme\Exceptions\LetsEncryptClientException;
+
 class JsonWebKey
 {
     public static function compute(string $accountKey): array
     {
         $privateKey = openssl_pkey_get_private($accountKey);
+
+        if ($privateKey === false) {
+            throw new LetsEncryptClientException('Can not create private key.');
+        }
 
         $details = openssl_pkey_get_details($privateKey);
 

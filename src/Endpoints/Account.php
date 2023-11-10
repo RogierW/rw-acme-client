@@ -4,8 +4,8 @@ namespace Rogierw\RwAcme\Endpoints;
 
 use Rogierw\RwAcme\DTO\AccountData;
 use Rogierw\RwAcme\Support\CryptRSA;
+use Rogierw\RwAcme\Exceptions\LetsEncryptClientException;
 use Rogierw\RwAcme\Support\JsonWebSignature;
-use RuntimeException;
 
 class Account extends Endpoint
 {
@@ -50,13 +50,13 @@ class Account extends Endpoint
             return AccountData::fromResponse($response);
         }
 
-        throw new RuntimeException('Creating account failed.');
+        throw new LetsEncryptClientException('Creating account failed.');
     }
 
     public function get(): AccountData
     {
         if (!$this->exists()) {
-            throw new RuntimeException('Account keys not found.');
+            throw new LetsEncryptClientException('Account keys not found.');
         }
 
         $payload = [
@@ -75,7 +75,7 @@ class Account extends Endpoint
         $response = $this->client->getHttpClient()->post($newAccountUrl, $signedPayload);
 
         if ($response->getHttpResponseCode() === 400) {
-            throw new RuntimeException($response->getBody());
+            throw new LetsEncryptClientException($response->getBody());
         }
 
         return AccountData::fromResponse($response);

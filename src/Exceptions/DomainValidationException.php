@@ -2,9 +2,7 @@
 
 namespace Rogierw\RwAcme\Exceptions;
 
-use Exception;
-
-class DomainValidationException extends Exception
+class DomainValidationException extends LetsEncryptClientException
 {
     public static function localHttpChallengeTestFailed(string $domain, string $code): self
     {

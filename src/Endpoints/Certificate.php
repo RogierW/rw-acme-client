@@ -4,8 +4,8 @@ namespace Rogierw\RwAcme\Endpoints;
 
 use Rogierw\RwAcme\DTO\CertificateBundleData;
 use Rogierw\RwAcme\DTO\OrderData;
+use Rogierw\RwAcme\Exceptions\LetsEncryptClientException;
 use Rogierw\RwAcme\Support\Base64;
-use RuntimeException;
 
 class Certificate extends Endpoint
 {
@@ -16,7 +16,7 @@ class Certificate extends Endpoint
         $response = $this->client->getHttpClient()->post($orderData->certificateUrl, $signedPayload);
 
         if ($response->getHttpResponseCode() !== 200) {
-            throw new RuntimeException('Failed to fetch certificate.');
+            throw new LetsEncryptClientException('Failed to fetch certificate.');
         }
 
         return CertificateBundleData::fromResponse($response);
@@ -25,11 +25,11 @@ class Certificate extends Endpoint
     public function revoke(string $pem, int $reason = 0): bool
     {
         if (($data = openssl_x509_read($pem)) === false) {
-            throw new RuntimeException('Could not parse the certificate.');
+            throw new LetsEncryptClientException('Could not parse the certificate.');
         }
 
         if (openssl_x509_export($data, $certificate) === false) {
-            throw new RuntimeException('Could not export the certificate.');
+            throw new LetsEncryptClientException('Could not export the certificate.');
         }
 
         preg_match('~-----BEGIN\sCERTIFICATE-----(.*)-----END\sCERTIFICATE-----~s', $certificate, $matches);

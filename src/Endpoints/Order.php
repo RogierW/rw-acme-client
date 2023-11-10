@@ -4,8 +4,8 @@ namespace Rogierw\RwAcme\Endpoints;
 
 use Rogierw\RwAcme\DTO\AccountData;
 use Rogierw\RwAcme\DTO\OrderData;
+use Rogierw\RwAcme\Exceptions\LetsEncryptClientException;
 use Rogierw\RwAcme\Support\Base64;
-use RuntimeException;
 
 class Order extends Endpoint
 {
@@ -14,7 +14,7 @@ class Order extends Endpoint
         $identifiers = [];
         foreach ($domains as $domain) {
             if (preg_match_all('~(\*\.)~', $domain) > 1) {
-                throw new RuntimeException('Cannot create orders with multiple wildcards in one domain.');
+                throw new LetsEncryptClientException('Cannot create orders with multiple wildcards in one domain.');
             }
 
             $identifiers[] = [
@@ -40,7 +40,7 @@ class Order extends Endpoint
         $response = $this->client->getHttpClient()->post($newOrderUrl, $keyId);
 
         if ($response->getHttpResponseCode() !== 201) {
-            throw new RuntimeException('Creating new order failed; bad response code.');
+            throw new LetsEncryptClientException('Creating new order failed; bad response code.');
         }
 
         return OrderData::fromResponse($response, $accountData->url);
@@ -59,13 +59,13 @@ class Order extends Endpoint
         $response = $this->client->getHttpClient()->get($orderUrl);
 
         if ($response->getHttpResponseCode() === 500) {
-            throw new RuntimeException($response->getBody());
+            throw new LetsEncryptClientException($response->getBody());
         }
 
         if ($response->getHttpResponseCode() === 404) {
             $this->client->logger('error', $response->getBody());
 
-            throw new RuntimeException('Order not found.');
+            throw new LetsEncryptClientException('Order not found.');
         }
 
         return OrderData::fromResponse($response, $account->url);
