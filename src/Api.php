@@ -12,6 +12,7 @@ use Rogierw\RwAcme\Endpoints\Order;
 use Rogierw\RwAcme\Exceptions\LetsEncryptClientException;
 use Rogierw\RwAcme\Http\Client;
 use Rogierw\RwAcme\Interfaces\AcmeAccountInterface;
+use Rogierw\RwAcme\Interfaces\HttpClientInterface;
 
 class Api
 {
@@ -19,16 +20,15 @@ class Api
     private const STAGING_URL = 'https://acme-staging-v02.api.letsencrypt.org';
 
     private string $baseUrl;
-    private Client $httpClient;
 
     public function __construct(
-        private ?AcmeAccountInterface $localAccount = null,
-        bool                          $staging = false,
-        private ?LoggerInterface      $logger = null
+        bool                             $staging = false,
+        private ?AcmeAccountInterface    $localAccount = null,
+        private ?LoggerInterface         $logger = null,
+        private HttpClientInterface|null $httpClient = null,
     )
     {
         $this->baseUrl = $staging ? self::STAGING_URL : self::PRODUCTION_URL;
-        $this->httpClient = new Client();
     }
 
     public function setLocalAccount(AcmeAccountInterface $account): self
@@ -82,9 +82,21 @@ class Api
         return $this->baseUrl;
     }
 
-    public function getHttpClient(): Client
+    public function getHttpClient(): HttpClientInterface
     {
+        // Create a default client if none is set.
+        if ($this->httpClient === null) {
+            $this->httpClient = new Client();
+        }
+
         return $this->httpClient;
+    }
+
+    public function setHttpClient(HttpClientInterface $httpClient): self
+    {
+        $this->httpClient = $httpClient;
+
+        return $this;
     }
 
     public function setLogger(LoggerInterface $logger): self
@@ -94,10 +106,10 @@ class Api
         return $this;
     }
 
-    public function logger(string $level, string $message): void
+    public function logger(string $level, string $message, array $context = []): void
     {
         if ($this->logger instanceof LoggerInterface) {
-            $this->logger->log($level, $message);
+            $this->logger->log($level, $message, $context);
         }
     }
 }

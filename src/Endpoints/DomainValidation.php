@@ -87,7 +87,8 @@ class DomainValidation extends Endpoint
                 LocalChallengeTest::http(
                     $domainValidation->identifier['value'],
                     $domainValidation->file['token'],
-                    $keyAuthorization
+                    $keyAuthorization,
+                    $this->client->getHttpClient()
                 );
             }
 

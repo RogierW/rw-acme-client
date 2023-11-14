@@ -48,10 +48,6 @@ class Certificate extends Endpoint
 
         $response = $this->client->getHttpClient()->post($revokeUrl, $signedPayload);
 
-        if ($response->getHttpResponseCode() === 200) {
-            return true;
-        }
-
-        return false;
+        return $response->getHttpResponseCode() === 200;
     }
 }

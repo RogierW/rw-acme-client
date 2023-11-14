@@ -2,34 +2,20 @@
 
 namespace Rogierw\RwAcme\Http;
 
-use Rogierw\RwAcme\Support\Str;
-
 class Response
 {
     public function __construct(
-        private string $rawHeaders,
-        private array $headers,
-        private array|string $body,
-        private string $error
-    ) {
+        private readonly array        $headers,
+        private readonly string       $requestedUrl,
+        private readonly ?int         $statusCode,
+        private readonly array|string $body,
+    )
+    {
     }
 
-    public function getRawHeaders(): array
+    public function getHeader(string $name, $default = null): mixed
     {
-        $headers = explode("\n", $this->rawHeaders);
-        $headersArr = [];
-
-        foreach ($headers as $header) {
-            if (!Str::contains($header, ':')) {
-                continue;
-            }
-
-            [$name, $value] = explode(':', $header, 2);
-
-            $headersArr[$name] = $value;
-        }
-
-        return $headersArr;
+        return $this->headers[$name] ?? $default;
     }
 
     public function getHeaders(): array
@@ -37,27 +23,28 @@ class Response
         return $this->headers;
     }
 
+    public function hasHeader(string $name): bool
+    {
+        return isset($this->headers[$name]);
+    }
+
     public function getBody(): array|string
     {
         return $this->body;
     }
 
-    public function hasBody(): bool
+    public function getRequestedUrl(): string
     {
-        return $this->body != false;
+        return $this->requestedUrl;
     }
 
-    public function getError(): string
+    public function hasBody(): bool
     {
-        return $this->error;
+        return !empty($this->body);
     }
 
     public function getHttpResponseCode(): ?int
     {
-        if (!isset($this->headers['http_code'])) {
-            return null;
-        }
-
-        return (int) $this->headers['http_code'];
+        return $this->statusCode;
     }
 }

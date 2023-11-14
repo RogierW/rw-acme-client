@@ -25,10 +25,10 @@ class OrderData extends Data
 
     public static function fromResponse(Response $response, string $accountUrl = ''): OrderData
     {
-        $url = Arr::get($response->getRawHeaders(), 'Location');
+        $url = $response->getHeader('location');
 
         if (empty($url)) {
-            $url = Arr::get($response->getHeaders(), 'url');
+            $url = $response->getRequestedUrl();
         }
 
         $url = trim(rtrim($url, '?'));

@@ -4,14 +4,13 @@ namespace Rogierw\RwAcme\Support;
 
 use Rogierw\RwAcme\Exceptions\DomainValidationException;
 use Rogierw\RwAcme\Http\Client;
+use Rogierw\RwAcme\Interfaces\HttpClientInterface;
 
 class LocalChallengeTest
 {
-    public static function http(string $domain, string $token, string $keyAuthorization): void
+    public static function http(string $domain, string $token, string $keyAuthorization, HttpClientInterface $httpClient): void
     {
-        $httpClient = new Client(10, 1);
-
-        $response = $httpClient->get($domain . '/.well-known/acme-challenge/' . $token);
+        $response = $httpClient->get($domain . '/.well-known/acme-challenge/' . $token, maxRedirects: 1);
 
         $body = $response->getBody();
 

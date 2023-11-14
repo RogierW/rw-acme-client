@@ -3,10 +3,11 @@
 namespace Rogierw\RwAcme\Http;
 
 use CurlHandle;
+use Rogierw\RwAcme\Interfaces\HttpClientInterface;
 
-class Client
+class Client implements HttpClientInterface
 {
-    public function __construct(private int $timeout = 10, private int $maxRedirects = 0)
+    public function __construct(private readonly int $timeout = 10)
     {
     }
 
@@ -15,25 +16,25 @@ class Client
         return $this->makeCurlRequest('head', $url);
     }
 
-    public function get(string $url, array $headers = [], array $arguments = []): Response
+    public function get(string $url, array $headers = [], array $arguments = [], int $maxRedirects = 0): Response
     {
-        return $this->makeCurlRequest('get', $url, $headers, $arguments);
+        return $this->makeCurlRequest('get', $url, $headers, $arguments, $maxRedirects);
     }
 
-    public function post(string $url, array $payload = [], array $headers = []): Response
+    public function post(string $url, array $payload = [], array $headers = [], int $maxRedirects = 0): Response
     {
         $headers = array_merge(['Content-Type: application/jose+json'], $headers);
 
-        return $this->makeCurlRequest('post', $url, $headers, $payload);
+        return $this->makeCurlRequest('post', $url, $headers, $payload, $maxRedirects);
     }
 
-    public function makeCurlRequest(string $httpVerb, string $fullUrl, array $headers = [], array $payload = []): Response
+    private function makeCurlRequest(string $httpVerb, string $fullUrl, array $headers = [], array $payload = [], int $maxRedirects = 0): Response
     {
         $headers = array_merge([
             'Content-Type: ' . ($httpVerb === 'post') ? 'application/jose+json' : 'application/json',
         ], $headers);
 
-        $curlHandle = $this->getCurlHandle($fullUrl, $headers);
+        $curlHandle = $this->getCurlHandle($fullUrl, $headers, $maxRedirects);
 
         switch ($httpVerb) {
             case 'head':
@@ -54,27 +55,31 @@ class Client
         $rawResponse = curl_exec($curlHandle);
         $headerSize = curl_getinfo($curlHandle, CURLINFO_HEADER_SIZE);
         $headers = curl_getinfo($curlHandle);
-        $error = curl_error($curlHandle);
 
         $rawHeaders = mb_substr($rawResponse, 0, $headerSize);
         $rawBody = mb_substr($rawResponse, $headerSize);
         $body = $rawBody;
 
-        if ($headers['content_type'] === 'application/json') {
-            $body = json_decode($rawBody, true);
+        if (
+            $headers['content-type'] === 'application/json' ||
+            $headers['content-type'] === 'application/problem+json'
+        ) {
+            $body = json_decode($rawBody, true, 512, JSON_THROW_ON_ERROR);
         }
 
-        return new Response($rawHeaders, $headers, $body, $error);
+        $parsedRawHeaders = $this->parseRawHeaders($rawHeaders);
+
+        return new Response($headers, $parsedRawHeaders['url'] ?? '', $parsedRawHeaders['http_code'] ?? null, $body);
     }
 
-    private function attachRequestPayload(CurlHandle &$curlHandle, array $data): void
+    private function attachRequestPayload(CurlHandle $curlHandle, array $data): void
     {
-        $encoded = json_encode($data);
+        $encoded = json_encode($data, JSON_THROW_ON_ERROR);
 
         curl_setopt($curlHandle, CURLOPT_POSTFIELDS, $encoded);
     }
 
-    private function getCurlHandle(string $fullUrl, array $headers = []): CurlHandle
+    private function getCurlHandle(string $fullUrl, array $headers = [], int $maxRedirects = 0): CurlHandle
     {
         $curlHandle = curl_init();
 
@@ -92,11 +97,29 @@ class Client
         curl_setopt($curlHandle, CURLOPT_ENCODING, '');
         curl_setopt($curlHandle, CURLOPT_HEADER, true);
 
-        if ($this->maxRedirects > 0) {
+        if ($maxRedirects > 0) {
             curl_setopt($curlHandle, CURLOPT_FOLLOWLOCATION, true);
-            curl_setopt($curlHandle, CURLOPT_MAXREDIRS, $this->maxRedirects);
+            curl_setopt($curlHandle, CURLOPT_MAXREDIRS, $maxRedirects);
         }
 
         return $curlHandle;
+    }
+
+    private function parseRawHeaders(string $rawHeaders): array
+    {
+        $headers = explode("\n", $rawHeaders);
+        $headersArr = [];
+
+        foreach ($headers as $header) {
+            if (!str_contains($header, ':')) {
+                continue;
+            }
+
+            [$name, $value] = explode(':', $header, 2);
+
+            $headersArr[strtolower($name)] = trim($value);
+        }
+
+        return $headersArr;
     }
 }

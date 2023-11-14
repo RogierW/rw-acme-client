@@ -23,7 +23,7 @@ class AccountData extends Data
 
     public static function fromResponse(Response $response): AccountData
     {
-        $url = trim(Arr::get($response->getRawHeaders(), 'Location', ''));
+        $url = trim($response->getHeader('location', ''));
 
         return new self(
             id: Url::extractId($url),
