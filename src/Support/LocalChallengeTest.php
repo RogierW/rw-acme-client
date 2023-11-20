@@ -15,7 +15,7 @@ class LocalChallengeTest
         $body = $response->getBody();
 
         if (is_array($body)) {
-            $body = json_encode($body);
+            $body = json_encode($body, JSON_THROW_ON_ERROR);
         }
 
         if (trim($body) === $keyAuthorization) {
@@ -24,7 +24,7 @@ class LocalChallengeTest
 
         throw DomainValidationException::localHttpChallengeTestFailed(
             $domain,
-            $response->getHttpResponseCode() ?? 'unknown'
+            $response->getHttpResponseCode()
         );
     }
 

@@ -5,6 +5,8 @@ namespace Rogierw\RwAcme\Endpoints;
 use Rogierw\RwAcme\DTO\AccountData;
 use Rogierw\RwAcme\DTO\OrderData;
 use Rogierw\RwAcme\Exceptions\LetsEncryptClientException;
+use Rogierw\RwAcme\Exceptions\OrderNotFoundException;
+use Rogierw\RwAcme\Exceptions\RateLimitException;
 use Rogierw\RwAcme\Support\Base64;
 
 class Order extends Endpoint
@@ -18,15 +20,15 @@ class Order extends Endpoint
             }
 
             $identifiers[] = [
-                'type'  => 'dns',
+                'type' => 'dns',
                 'value' => $domain,
             ];
         }
 
         $payload = [
             'identifiers' => $identifiers,
-            'notBefore'   => '',
-            'notAfter'    => '',
+            'notBefore' => '',
+            'notAfter' => '',
         ];
 
         $newOrderUrl = $this->client->directory()->newOrder();
@@ -51,11 +53,11 @@ class Order extends Endpoint
     {
         $account = $this->client->account()->get();
 
-        $orderUrl = vsprintf('%s%s/%s', [
+        $orderUrl = sprintf('%s%s/%s',
             $this->client->directory()->getOrder(),
             $account->id,
             $id,
-        ]);
+        );
 
         $response = $this->client->getHttpClient()->get($orderUrl);
 
