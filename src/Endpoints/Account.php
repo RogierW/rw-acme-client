@@ -3,8 +3,8 @@
 namespace Rogierw\RwAcme\Endpoints;
 
 use Rogierw\RwAcme\DTO\AccountData;
-use Rogierw\RwAcme\Support\CryptRSA;
 use Rogierw\RwAcme\Exceptions\LetsEncryptClientException;
+use Rogierw\RwAcme\Support\CryptRSA;
 use Rogierw\RwAcme\Support\JsonWebSignature;
 
 class Account extends Endpoint
