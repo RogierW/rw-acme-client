@@ -23,10 +23,9 @@ class Api
 
     public function __construct(
         private ?AcmeAccountInterface $localAccount = null,
-        bool                          $staging = false,
-        private ?LoggerInterface      $logger = null
-    )
-    {
+        bool $staging = false,
+        private ?LoggerInterface $logger = null
+    ) {
         $this->baseUrl = $staging ? self::STAGING_URL : self::PRODUCTION_URL;
         $this->httpClient = new Client();
     }

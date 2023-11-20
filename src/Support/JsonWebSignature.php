@@ -5,12 +5,11 @@ namespace Rogierw\RwAcme\Support;
 class JsonWebSignature
 {
     public static function generate(
-        array                         $payload,
-        string                        $url,
-        string                        $nonce,
+        array $payload,
+        string $url,
+        string $nonce,
         #[\SensitiveParameter] string $accountPrivateKey
-    ): array
-    {
+    ): array {
         $privateKey = openssl_pkey_get_private($accountPrivateKey);
 
         $protected = [
