@@ -46,6 +46,7 @@ class Order extends Endpoint
         }
 
         $this->logResponse('error', 'Creating new order failed; bad response code.', $response, ['payload' => $payload]);
+
         throw new LetsEncryptClientException('Creating new order failed; bad response code.');
     }
 
@@ -53,7 +54,8 @@ class Order extends Endpoint
     {
         $account = $this->client->account()->get();
 
-        $orderUrl = sprintf('%s%s/%s',
+        $orderUrl = sprintf(
+            '%s%s/%s',
             $this->client->directory()->getOrder(),
             $account->id,
             $id,

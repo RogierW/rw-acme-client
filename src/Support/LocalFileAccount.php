@@ -91,13 +91,13 @@ class LocalFileAccount implements AcmeAccountInterface
         $filePath = $this->accountKeysPath.$this->getKeyName($type);
 
         if (!file_exists($filePath)) {
-            throw new LetsEncryptClientException(sprintf("[%s] File does not exist", $filePath));
+            throw new LetsEncryptClientException(sprintf('[%s] File does not exist', $filePath));
         }
 
         $content = file_get_contents($filePath);
 
         if ($content === false) {
-            throw new LetsEncryptClientException(sprintf("[%s] Failed to get contents of the file", $filePath));
+            throw new LetsEncryptClientException(sprintf('[%s] Failed to get contents of the file', $filePath));
         }
 
         return $content;

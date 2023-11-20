@@ -15,6 +15,7 @@ class Directory extends Endpoint
 
         if ($response->getHttpResponseCode() >= 400) {
             $this->logResponse('error', 'Cannot get directory', $response);
+
             throw new LetsEncryptClientException('Cannot get directory');
         }
 

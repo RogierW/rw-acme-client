@@ -6,12 +6,11 @@ class KeyId
 {
     public static function generate(
         #[\SensitiveParameter] string $accountPrivateKey,
-        string                        $kid,
-        string                        $url,
-        string                        $nonce,
-        ?array                        $payload = null
-    ): array
-    {
+        string $kid,
+        string $url,
+        string $nonce,
+        ?array $payload = null
+    ): array {
         $privateKey = openssl_pkey_get_private($accountPrivateKey);
 
         $data = [

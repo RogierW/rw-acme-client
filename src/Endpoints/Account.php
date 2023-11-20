@@ -72,6 +72,7 @@ class Account extends Endpoint
     {
         $message = $response->getBody()['details'] ?? $defaultMessage;
         $this->logResponse('error', $message, $response);
+
         throw new LetsEncryptClientException($message);
     }
 }

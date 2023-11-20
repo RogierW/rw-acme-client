@@ -3,7 +3,6 @@
 namespace Rogierw\RwAcme\DTO;
 
 use Rogierw\RwAcme\Http\Response;
-use Rogierw\RwAcme\Support\Arr;
 use Rogierw\RwAcme\Support\Url;
 use Spatie\LaravelData\Data;
 

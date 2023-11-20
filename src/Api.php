@@ -22,12 +22,11 @@ class Api
     private string $baseUrl;
 
     public function __construct(
-        bool                             $staging = false,
-        private ?AcmeAccountInterface    $localAccount = null,
-        private ?LoggerInterface         $logger = null,
+        bool $staging = false,
+        private ?AcmeAccountInterface $localAccount = null,
+        private ?LoggerInterface $logger = null,
         private HttpClientInterface|null $httpClient = null,
-    )
-    {
+    ) {
         $this->baseUrl = $staging ? self::STAGING_URL : self::PRODUCTION_URL;
     }
 

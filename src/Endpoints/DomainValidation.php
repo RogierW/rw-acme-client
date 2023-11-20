@@ -76,12 +76,11 @@ class DomainValidation extends Endpoint
 
     /** @throws \Rogierw\RwAcme\Exceptions\DomainValidationException */
     public function start(
-        AccountData                $accountData,
-        DomainValidationData       $domainValidation,
+        AccountData $accountData,
+        DomainValidationData $domainValidation,
         AuthorizationChallengeEnum $authChallenge,
-        bool                       $localTest = true
-    ): Response
-    {
+        bool $localTest = true
+    ): Response {
         $this->client->logger('info', sprintf(
             'Start %s challenge for %s',
             $authChallenge->value,

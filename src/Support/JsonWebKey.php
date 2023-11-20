@@ -8,8 +8,7 @@ class JsonWebKey
 {
     public static function compute(
         #[\SensitiveParameter] string $accountKey
-    ): array
-    {
+    ): array {
         $privateKey = openssl_pkey_get_private($accountKey);
 
         if ($privateKey === false) {

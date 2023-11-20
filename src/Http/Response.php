@@ -5,12 +5,11 @@ namespace Rogierw\RwAcme\Http;
 class Response
 {
     public function __construct(
-        private readonly array        $headers,
-        private readonly string       $requestedUrl,
-        private readonly ?int         $statusCode,
+        private readonly array $headers,
+        private readonly string $requestedUrl,
+        private readonly ?int $statusCode,
         private readonly array|string $body,
-    )
-    {
+    ) {
     }
 
     public function getHeader(string $name, $default = null): mixed

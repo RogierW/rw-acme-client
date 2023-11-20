@@ -17,6 +17,7 @@ class Certificate extends Endpoint
 
         if ($response->getHttpResponseCode() !== 200) {
             $this->logResponse('error', 'Failed to fetch certificate', $response);
+
             throw new LetsEncryptClientException('Failed to fetch certificate.');
         }
 

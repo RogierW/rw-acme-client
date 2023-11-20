@@ -3,7 +3,6 @@
 namespace Rogierw\RwAcme\Support;
 
 use Rogierw\RwAcme\Exceptions\DomainValidationException;
-use Rogierw\RwAcme\Http\Client;
 use Rogierw\RwAcme\Interfaces\HttpClientInterface;
 
 class LocalChallengeTest
