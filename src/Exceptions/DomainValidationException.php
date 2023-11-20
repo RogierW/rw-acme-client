@@ -16,7 +16,7 @@ class DomainValidationException extends LetsEncryptClientException
     public static function localDnsChallengeTestFailed(string $domain): self
     {
         return new static(sprintf(
-            "Couldn't fetch DNS records for %s.",
+            "Couldn't fetch the correct DNS records for %s.",
             $domain
         ));
     }

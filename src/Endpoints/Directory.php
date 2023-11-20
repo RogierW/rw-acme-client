@@ -2,15 +2,23 @@
 
 namespace Rogierw\RwAcme\Endpoints;
 
+use Rogierw\RwAcme\Exceptions\LetsEncryptClientException;
 use Rogierw\RwAcme\Http\Response;
 
 class Directory extends Endpoint
 {
     public function all(): Response
     {
-        return $this->client
+        $response = $this->client
             ->getHttpClient()
             ->get($this->client->getBaseUrl() . '/directory');
+
+        if ($response->getHttpResponseCode() >= 400) {
+            $this->logResponse('error', 'Cannot get directory', $response);
+            throw new LetsEncryptClientException('Cannot get directory');
+        }
+
+        return $response;
     }
 
     public function newNonce(): string

@@ -16,6 +16,7 @@ class Certificate extends Endpoint
         $response = $this->client->getHttpClient()->post($orderData->certificateUrl, $signedPayload);
 
         if ($response->getHttpResponseCode() !== 200) {
+            $this->logResponse('error', 'Failed to fetch certificate', $response);
             throw new LetsEncryptClientException('Failed to fetch certificate.');
         }
 
@@ -47,6 +48,10 @@ class Certificate extends Endpoint
         );
 
         $response = $this->client->getHttpClient()->post($revokeUrl, $signedPayload);
+
+        if ($response->getHttpResponseCode() !== 200) {
+            $this->logResponse('error', 'Failed to revoke certificate', $response);
+        }
 
         return $response->getHttpResponseCode() === 200;
     }

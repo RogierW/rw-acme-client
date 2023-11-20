@@ -39,11 +39,12 @@ class Order extends Endpoint
 
         $response = $this->client->getHttpClient()->post($newOrderUrl, $keyId);
 
-        if ($response->getHttpResponseCode() !== 201) {
-            throw new LetsEncryptClientException('Creating new order failed; bad response code.');
+        if ($response->getHttpResponseCode() === 201) {
+            return OrderData::fromResponse($response, $accountData->url);
         }
 
-        return OrderData::fromResponse($response, $accountData->url);
+        $this->logResponse('error', 'Creating new order failed; bad response code.', $response, ['payload' => $payload]);
+        throw new LetsEncryptClientException('Creating new order failed; bad response code.');
     }
 
     public function get(string $id): OrderData
@@ -58,17 +59,19 @@ class Order extends Endpoint
 
         $response = $this->client->getHttpClient()->get($orderUrl);
 
-        if ($response->getHttpResponseCode() === 500) {
-            throw new LetsEncryptClientException($response->getBody());
+        // Everything below 400 is a success.
+        if ($response->getHttpResponseCode() < 400) {
+            return OrderData::fromResponse($response, $account->url);
         }
 
-        if ($response->getHttpResponseCode() === 404) {
-            $this->client->logger('error', $response->getBody());
+        // Always log the error.
+        $this->logResponse('error', 'Getting order failed; bad response code.', $response);
 
-            throw new LetsEncryptClientException('Order not found.');
-        }
-
-        return OrderData::fromResponse($response, $account->url);
+        match ($response->getHttpResponseCode()) {
+            404 => throw new OrderNotFoundException($response->getBody()['detail'] ?? 'Order cannot be found.'),
+            429 => throw new RateLimitException($response->getBody()['detail'] ?? 'Too many requests.'),
+            default => throw new LetsEncryptClientException($response->getBody()['detail'] ?? 'Unknown error.'),
+        };
     }
 
     public function finalize(OrderData $orderData, string $csr): bool
@@ -106,7 +109,7 @@ class Order extends Endpoint
             return true;
         }
 
-        $this->client->logger('error', 'Finalize order: ' . json_encode($response->getBody()));
+        $this->logResponse('error', 'Cannot finalize order '.$orderData->id, $response, ['orderData' => $orderData]);
 
         return false;
     }

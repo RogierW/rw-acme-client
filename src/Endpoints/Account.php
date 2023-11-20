@@ -71,7 +71,7 @@ class Account extends Endpoint
     protected function throwError(Response $response, string $defaultMessage): never
     {
         $message = $response->getBody()['details'] ?? $defaultMessage;
-        $this->client->logger('error', $message, ['response' => $response->getBody()]);
+        $this->logResponse('error', $message, $response);
         throw new LetsEncryptClientException($message);
     }
 }

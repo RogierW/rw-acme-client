@@ -31,6 +31,7 @@ class DomainValidation extends Endpoint
             if ($response->getHttpResponseCode() === 200) {
                 $data[] = DomainValidationData::fromResponse($response);
             }
+            $this->logResponse('error', 'Cannot get domain validation', $response);
         }
 
         return $data;
@@ -107,7 +108,18 @@ class DomainValidation extends Endpoint
 
         $data = $this->createKeyId($accountData->url, $domainValidation->{$type}['url'], $payload);
 
-        return $this->client->getHttpClient()->post($domainValidation->{$type}['url'], $data);
+        $response = $this->client->getHttpClient()->post($domainValidation->{$type}['url'], $data);
+
+        if ($response->getHttpResponseCode() >= 400) {
+            $this->logResponse(
+                'error',
+                $response->getBody()['detail'] ?? 'Unknown error',
+                $response,
+                ['payload' => $payload, 'data' => $data]
+            );
+        }
+
+        return $response;
     }
 
     public function allChallengesPassed(OrderData $orderData): bool
