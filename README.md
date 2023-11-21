@@ -27,7 +27,7 @@ Create an instance of `Rogierw\RwAcme\Api` client and provide it with a local ac
 
 ```php
 $localAccount = new \Rogierw\RwAcme\Support\LocalFileAccount(__DIR__.'/__account', 'test@example.com');
-$client = new Api($localAccount);
+$client = new Api(localAccount: $localAccount);
 ```
 
 You could also create a client and pass the local account data later:
