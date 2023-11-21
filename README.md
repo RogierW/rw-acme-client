@@ -9,12 +9,12 @@ This library allows you to request, renew and revoke SSL certificates provided b
 If you're looking for an easy-to-use CLI tool for managing your LE certificates, take a look at the [RW ACME CLI](https://github.com/RogierW/rw-acme-cli) project.
 
 ## Requirements
-- PHP ^8.1
+- PHP ^8.2
 - OpenSSL >= 1.0.1
 - cURL extension
 - JSON extension
 
-* **Note**: v2 of this package only supports `php:^8.1`. If you're looking for the older version, check out [v1](https://github.com/RogierW/rw-acme-client/tree/v1).
+* **Note**: v4 of this package only supports `php:^8.2`. If you're looking for the older versions, check out [v1](https://github.com/RogierW/rw-acme-client/tree/v1) or [v3](https://github.com/RogierW/rw-acme-client/tree/v3).
 
 ## Installation
 You can install the package via composer:
