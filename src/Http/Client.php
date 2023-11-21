@@ -60,16 +60,13 @@ class Client implements HttpClientInterface
         $rawBody = mb_substr($rawResponse, $headerSize);
         $body = $rawBody;
 
-        if (
-            $headers['content-type'] === 'application/json' ||
-            $headers['content-type'] === 'application/problem+json'
-        ) {
+        $allHeaders = array_merge($headers, $this->parseRawHeaders($rawHeaders));
+
+        if (json_validate($rawBody)) {
             $body = json_decode($rawBody, true, 512, JSON_THROW_ON_ERROR);
         }
 
-        $parsedRawHeaders = $this->parseRawHeaders($rawHeaders);
-
-        return new Response($headers, $parsedRawHeaders['url'] ?? '', $parsedRawHeaders['http_code'] ?? null, $body);
+        return new Response($allHeaders, $allHeaders['url'] ?? '', $allHeaders['http_code'] ?? null, $body);
     }
 
     private function attachRequestPayload(CurlHandle $curlHandle, array $data): void
@@ -117,7 +114,7 @@ class Client implements HttpClientInterface
 
             [$name, $value] = explode(':', $header, 2);
 
-            $headersArr[strtolower($name)] = trim($value);
+            $headersArr[str_replace('-', '_', strtolower($name))] = trim($value);
         }
 
         return $headersArr;

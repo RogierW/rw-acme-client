@@ -10,6 +10,6 @@ class Nonce extends Endpoint
             ->getHttpClient()
             ->head($this->client->directory()->newNonce());
 
-        return trim($response->getHeader('replay-nonce'));
+        return trim($response->getHeader('replay_nonce'));
     }
 }
