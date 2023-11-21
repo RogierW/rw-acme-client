@@ -3,6 +3,7 @@
 namespace Rogierw\RwAcme\Endpoints;
 
 use Rogierw\RwAcme\Api;
+use Rogierw\RwAcme\Http\Response;
 use Rogierw\RwAcme\Support\KeyId;
 
 abstract class Endpoint
@@ -11,11 +12,11 @@ abstract class Endpoint
     {
     }
 
-    protected function createKeyId(string $acountUrl, string $url, ?array $payload = null): array
+    protected function createKeyId(string $accountUrl, string $url, ?array $payload = null): array
     {
         return KeyId::generate(
-            $this->client->getAccountKeysPath(),
-            $acountUrl,
+            $this->client->localAccount()->getPrivateKey(),
+            $accountUrl,
             $url,
             $this->client->nonce()->getNew(),
             $payload
@@ -24,6 +25,16 @@ abstract class Endpoint
 
     protected function getAccountPrivateKey(): string
     {
-        return file_get_contents($this->client->getAccountKeysPath() . 'private.pem');
+        return $this->client->localAccount()->getPrivateKey();
+    }
+
+    protected function logResponse(string $level, string $message, Response $response, array $additionalContext = []): void
+    {
+        $this->client->logger($level, $message, array_merge([
+            'url' => $response->getRequestedUrl(),
+            'status' => $response->getHttpResponseCode(),
+            'headers' => $response->getHeaders(),
+            'body' => $response->getBody(),
+        ], $additionalContext));
     }
 }

@@ -2,9 +2,7 @@
 
 namespace Rogierw\RwAcme\Exceptions;
 
-use Exception;
-
-class DomainValidationException extends Exception
+class DomainValidationException extends LetsEncryptClientException
 {
     public static function localHttpChallengeTestFailed(string $domain, string $code): self
     {
@@ -18,7 +16,7 @@ class DomainValidationException extends Exception
     public static function localDnsChallengeTestFailed(string $domain): self
     {
         return new static(sprintf(
-            "Couldn't fetch DNS records for %s.",
+            "Couldn't fetch the correct DNS records for %s.",
             $domain
         ));
     }

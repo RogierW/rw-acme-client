@@ -4,8 +4,10 @@ namespace Rogierw\RwAcme\Endpoints;
 
 use Rogierw\RwAcme\DTO\AccountData;
 use Rogierw\RwAcme\DTO\OrderData;
+use Rogierw\RwAcme\Exceptions\LetsEncryptClientException;
+use Rogierw\RwAcme\Exceptions\OrderNotFoundException;
+use Rogierw\RwAcme\Exceptions\RateLimitException;
 use Rogierw\RwAcme\Support\Base64;
-use RuntimeException;
 
 class Order extends Endpoint
 {
@@ -14,19 +16,19 @@ class Order extends Endpoint
         $identifiers = [];
         foreach ($domains as $domain) {
             if (preg_match_all('~(\*\.)~', $domain) > 1) {
-                throw new RuntimeException('Cannot create orders with multiple wildcards in one domain.');
+                throw new LetsEncryptClientException('Cannot create orders with multiple wildcards in one domain.');
             }
 
             $identifiers[] = [
-                'type'  => 'dns',
+                'type' => 'dns',
                 'value' => $domain,
             ];
         }
 
         $payload = [
             'identifiers' => $identifiers,
-            'notBefore'   => '',
-            'notAfter'    => '',
+            'notBefore' => '',
+            'notAfter' => '',
         ];
 
         $newOrderUrl = $this->client->directory()->newOrder();
@@ -39,36 +41,41 @@ class Order extends Endpoint
 
         $response = $this->client->getHttpClient()->post($newOrderUrl, $keyId);
 
-        if ($response->getHttpResponseCode() !== 201) {
-            throw new RuntimeException('Creating new order failed; bad response code.');
+        if ($response->getHttpResponseCode() === 201) {
+            return OrderData::fromResponse($response, $accountData->url);
         }
 
-        return OrderData::fromResponse($response, $accountData->url);
+        $this->logResponse('error', 'Creating new order failed; bad response code.', $response, ['payload' => $payload]);
+
+        throw new LetsEncryptClientException('Creating new order failed; bad response code.');
     }
 
     public function get(string $id): OrderData
     {
         $account = $this->client->account()->get();
 
-        $orderUrl = vsprintf('%s%s/%s', [
+        $orderUrl = sprintf(
+            '%s%s/%s',
             $this->client->directory()->getOrder(),
             $account->id,
             $id,
-        ]);
+        );
 
         $response = $this->client->getHttpClient()->get($orderUrl);
 
-        if ($response->getHttpResponseCode() === 500) {
-            throw new RuntimeException($response->getBody());
+        // Everything below 400 is a success.
+        if ($response->getHttpResponseCode() < 400) {
+            return OrderData::fromResponse($response, $account->url);
         }
 
-        if ($response->getHttpResponseCode() === 404) {
-            $this->client->logger('error', $response->getBody());
+        // Always log the error.
+        $this->logResponse('error', 'Getting order failed; bad response code.', $response);
 
-            throw new RuntimeException('Order not found.');
-        }
-
-        return OrderData::fromResponse($response, $account->url);
+        match ($response->getHttpResponseCode()) {
+            404 => throw new OrderNotFoundException($response->getBody()['detail'] ?? 'Order cannot be found.'),
+            429 => throw new RateLimitException($response->getBody()['detail'] ?? 'Too many requests.'),
+            default => throw new LetsEncryptClientException($response->getBody()['detail'] ?? 'Unknown error.'),
+        };
     }
 
     public function finalize(OrderData $orderData, string $csr): bool
@@ -106,7 +113,7 @@ class Order extends Endpoint
             return true;
         }
 
-        $this->client->logger('error', 'Finalize order: ' . json_encode($response->getBody()));
+        $this->logResponse('error', 'Cannot finalize order '.$orderData->id, $response, ['orderData' => $orderData]);
 
         return false;
     }

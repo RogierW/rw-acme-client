@@ -6,6 +6,7 @@ use Rogierw\RwAcme\DTO\AccountData;
 use Rogierw\RwAcme\DTO\DomainValidationData;
 use Rogierw\RwAcme\DTO\OrderData;
 use Rogierw\RwAcme\Enums\AuthorizationChallengeEnum;
+use Rogierw\RwAcme\Exceptions\DomainValidationException;
 use Rogierw\RwAcme\Http\Response;
 use Rogierw\RwAcme\Support\Arr;
 use Rogierw\RwAcme\Support\DnsDigest;
@@ -31,6 +32,8 @@ class DomainValidation extends Endpoint
             if ($response->getHttpResponseCode() === 200) {
                 $data[] = DomainValidationData::fromResponse($response);
             }
+
+            $this->logResponse('error', 'Cannot get domain validation', $response);
         }
 
         return $data;
@@ -43,16 +46,22 @@ class DomainValidation extends Endpoint
 
         $authorizations = [];
         foreach ($challenges as $domainValidationData) {
-            if ((is_null($authChallenge) || $authChallenge === AuthorizationChallengeEnum::HTTP)) {
+            if (
+                (is_null($authChallenge) || $authChallenge === AuthorizationChallengeEnum::HTTP)
+                && !empty($domainValidationData->file)
+            ) {
                 $authorizations[] = [
                     'identifier' => $domainValidationData->identifier['value'],
                     'type' => $domainValidationData->file['type'],
                     'filename' => $domainValidationData->file['token'],
-                    'content' => $domainValidationData->file['token'] . '.' . $thumbprint,
+                    'content' => $domainValidationData->file['token'].'.'.$thumbprint,
                 ];
             }
 
-            if ((is_null($authChallenge) || $authChallenge === AuthorizationChallengeEnum::DNS)) {
+            if (
+                (is_null($authChallenge) || $authChallenge === AuthorizationChallengeEnum::DNS)
+                && !empty($domainValidationData->dns)
+            ) {
                 $authorizations[] = [
                     'identifier' => $domainValidationData->identifier['value'],
                     'type' => $domainValidationData->dns['type'],
@@ -80,14 +89,20 @@ class DomainValidation extends Endpoint
 
         $type = $authChallenge === AuthorizationChallengeEnum::DNS ? 'dns' : 'file';
         $thumbprint = JsonWebKey::thumbprint(JsonWebKey::compute($this->getAccountPrivateKey()));
-        $keyAuthorization = $domainValidation->{$type}['token'] . '.' . $thumbprint;
+
+        if (empty($domainValidation->{$type})) {
+            throw new DomainValidationException(sprintf('No %s challenge found for %s', $type, $domainValidation->identifier['value']));
+        }
+
+        $keyAuthorization = $domainValidation->{$type}['token'].'.'.$thumbprint;
 
         if ($localTest) {
             if ($authChallenge === AuthorizationChallengeEnum::HTTP) {
                 LocalChallengeTest::http(
                     $domainValidation->identifier['value'],
                     $domainValidation->file['token'],
-                    $keyAuthorization
+                    $keyAuthorization,
+                    $this->client->getHttpClient()
                 );
             }
 
@@ -106,7 +121,18 @@ class DomainValidation extends Endpoint
 
         $data = $this->createKeyId($accountData->url, $domainValidation->{$type}['url'], $payload);
 
-        return $this->client->getHttpClient()->post($domainValidation->{$type}['url'], $data);
+        $response = $this->client->getHttpClient()->post($domainValidation->{$type}['url'], $data);
+
+        if ($response->getHttpResponseCode() >= 400) {
+            $this->logResponse(
+                'error',
+                $response->getBody()['detail'] ?? 'Unknown error',
+                $response,
+                ['payload' => $payload, 'data' => $data]
+            );
+        }
+
+        return $response;
     }
 
     public function allChallengesPassed(OrderData $orderData): bool
@@ -134,7 +160,7 @@ class DomainValidation extends Endpoint
     /** @param DomainValidationData[] $domainValidation */
     private function challengeSucceeded(array $domainValidation): bool
     {
-        // Verify if the challenges has been passed.
+        // Verify if the challenges have been passed.
         foreach ($domainValidation as $status) {
             $this->client->logger(
                 'info',

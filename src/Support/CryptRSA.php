@@ -2,11 +2,14 @@
 
 namespace Rogierw\RwAcme\Support;
 
-use RuntimeException;
+use Rogierw\RwAcme\Exceptions\LetsEncryptClientException;
 
 class CryptRSA
 {
-    public static function generate(string $directory): void
+    /**
+     * @return array{privateKey: string, publicKey: string}
+     */
+    public static function generate(): array
     {
         $pKey = openssl_pkey_new([
             'private_key_type' => OPENSSL_KEYTYPE_RSA,
@@ -14,12 +17,14 @@ class CryptRSA
         ]);
 
         if (!openssl_pkey_export($pKey, $privateKey)) {
-            throw new RuntimeException('RSA keypair export failed.');
+            throw new LetsEncryptClientException('RSA keypair export failed.');
         }
 
         $details = openssl_pkey_get_details($pKey);
 
-        file_put_contents($directory . 'private.pem', $privateKey);
-        file_put_contents($directory . 'public.pem', $details['key']);
+        return [
+            'privateKey' => $privateKey,
+            'publicKey' => $details['key'],
+        ];
     }
 }

@@ -23,11 +23,25 @@ You can install the package via composer:
 
 ## Usage
 
-You can create an instance of `Rogierw\RwAcme\Api` client.
+Create an instance of `Rogierw\RwAcme\Api` client and provide it with a local account that will be used to store the account keys.
 
 ```php
-$client = new Api('test@example.com', __DIR__ . '/__account');
+$localAccount = new \Rogierw\RwAcme\Support\LocalFileAccount(__DIR__.'/__account', 'test@example.com');
+$client = new Api(localAccount: $localAccount);
 ```
+
+You could also create a client and pass the local account data later:
+
+```php
+$client = new Api();
+
+// Do some stuff.
+
+$localAccount = new \Rogierw\RwAcme\Support\LocalFileAccount(__DIR__.'/__account', 'test@example.com');
+$client->setLocalAccount($localAccount);
+```
+
+> Please note that **setting a local account is required** before making any of the calls detailed below. 
 
 ### Creating an account
 ```php
@@ -38,6 +52,10 @@ if (!$client->account()->exists()) {
 // Or get an existing account.
 $account = $client->account()->get();
 ```
+
+### Difference between `account` and `localAccount`
+- `account` is the account created at the ACME (Let's Encrypt) server with data from the `localAccount`.
+- `localAccount` handles the private/public key pair and contact email address used to sign requests to the ACME server. Depending on the implementation, this data is stored locally or, for example, in a database.
 
 ### Creating an order
 ```php

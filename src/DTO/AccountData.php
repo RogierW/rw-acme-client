@@ -3,7 +3,6 @@
 namespace Rogierw\RwAcme\DTO;
 
 use Rogierw\RwAcme\Http\Response;
-use Rogierw\RwAcme\Support\Arr;
 use Rogierw\RwAcme\Support\Url;
 use Spatie\LaravelData\Data;
 
@@ -23,7 +22,7 @@ class AccountData extends Data
 
     public static function fromResponse(Response $response): AccountData
     {
-        $url = trim(Arr::get($response->getRawHeaders(), 'Location', ''));
+        $url = trim($response->getHeader('location', ''));
 
         return new self(
             id: Url::extractId($url),

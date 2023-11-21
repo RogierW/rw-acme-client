@@ -9,25 +9,41 @@ use Rogierw\RwAcme\Endpoints\Directory;
 use Rogierw\RwAcme\Endpoints\DomainValidation;
 use Rogierw\RwAcme\Endpoints\Nonce;
 use Rogierw\RwAcme\Endpoints\Order;
+use Rogierw\RwAcme\Exceptions\LetsEncryptClientException;
 use Rogierw\RwAcme\Http\Client;
-use Rogierw\RwAcme\Support\Str;
+use Rogierw\RwAcme\Interfaces\AcmeAccountInterface;
+use Rogierw\RwAcme\Interfaces\HttpClientInterface;
 
 class Api
 {
-    const PRODUCTION_URL = 'https://acme-v02.api.letsencrypt.org';
-    const STAGING_URL = 'https://acme-staging-v02.api.letsencrypt.org';
+    private const PRODUCTION_URL = 'https://acme-v02.api.letsencrypt.org';
+    private const STAGING_URL = 'https://acme-staging-v02.api.letsencrypt.org';
 
     private string $baseUrl;
-    private Client $httpClient;
 
     public function __construct(
-        private readonly string $accountEmail,
-        private string $accountKeysPath,
         bool $staging = false,
-        private ?LoggerInterface $logger = null
+        private ?AcmeAccountInterface $localAccount = null,
+        private ?LoggerInterface $logger = null,
+        private HttpClientInterface|null $httpClient = null,
     ) {
         $this->baseUrl = $staging ? self::STAGING_URL : self::PRODUCTION_URL;
-        $this->httpClient = new Client();
+    }
+
+    public function setLocalAccount(AcmeAccountInterface $account): self
+    {
+        $this->localAccount = $account;
+
+        return $this;
+    }
+
+    public function localAccount(): AcmeAccountInterface
+    {
+        if ($this->localAccount === null) {
+            throw new LetsEncryptClientException('No account set.');
+        }
+
+        return $this->localAccount;
     }
 
     public function directory(): Directory
@@ -60,32 +76,26 @@ class Api
         return new Certificate($this);
     }
 
-    public function getAccountEmail(): string
-    {
-        return $this->accountEmail;
-    }
-
-    public function getAccountKeysPath(): string
-    {
-        if (!Str::endsWith($this->accountKeysPath, '/')) {
-            $this->accountKeysPath .= '/';
-        }
-
-        if (!is_dir($this->accountKeysPath)) {
-            mkdir($this->accountKeysPath, 0755, true);
-        }
-
-        return $this->accountKeysPath;
-    }
-
     public function getBaseUrl(): string
     {
         return $this->baseUrl;
     }
 
-    public function getHttpClient(): Client
+    public function getHttpClient(): HttpClientInterface
     {
+        // Create a default client if none is set.
+        if ($this->httpClient === null) {
+            $this->httpClient = new Client();
+        }
+
         return $this->httpClient;
+    }
+
+    public function setHttpClient(HttpClientInterface $httpClient): self
+    {
+        $this->httpClient = $httpClient;
+
+        return $this;
     }
 
     public function setLogger(LoggerInterface $logger): self
@@ -95,10 +105,10 @@ class Api
         return $this;
     }
 
-    public function logger(string $level, string $message): void
+    public function logger(string $level, string $message, array $context = []): void
     {
         if ($this->logger instanceof LoggerInterface) {
-            $this->logger->log($level, $message);
+            $this->logger->log($level, $message, $context);
         }
     }
 }

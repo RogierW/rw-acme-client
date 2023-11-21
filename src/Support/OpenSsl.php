@@ -3,7 +3,7 @@
 namespace Rogierw\RwAcme\Support;
 
 use OpenSSLAsymmetricKey;
-use RuntimeException;
+use Rogierw\RwAcme\Exceptions\LetsEncryptClientException;
 
 class OpenSsl
 {
@@ -18,7 +18,7 @@ class OpenSsl
     public static function openSslKeyToString(OpenSSLAsymmetricKey $key): string
     {
         if (!openssl_pkey_export($key, $output)) {
-            throw new RuntimeException('Exporting SSL key failed.');
+            throw new LetsEncryptClientException('Exporting SSL key failed.');
         }
 
         return trim($output);
@@ -59,7 +59,7 @@ class OpenSsl
         fclose($tempFile);
 
         if (!openssl_csr_export($csr, $out)) {
-            throw new RuntimeException('Exporting CSR failed.');
+            throw new LetsEncryptClientException('Exporting CSR failed.');
         }
 
         return trim($out);

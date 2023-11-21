@@ -3,103 +3,76 @@
 namespace Rogierw\RwAcme\Endpoints;
 
 use Rogierw\RwAcme\DTO\AccountData;
-use Rogierw\RwAcme\Support\CryptRSA;
+use Rogierw\RwAcme\Exceptions\LetsEncryptClientException;
+use Rogierw\RwAcme\Http\Response;
 use Rogierw\RwAcme\Support\JsonWebSignature;
-use RuntimeException;
 
 class Account extends Endpoint
 {
     public function exists(): bool
     {
-        if (!is_dir($this->client->getAccountKeysPath())) {
-            return false;
-        }
-
-        if (is_file($this->client->getAccountKeysPath() . 'private.pem')
-            && is_file($this->client->getAccountKeysPath() . 'public.pem')) {
-            return true;
-        }
-
-        return false;
+        return $this->client->localAccount()->exists();
     }
 
     public function create(): AccountData
     {
-        $this->initAccountDirectory();
+        $this->client->localAccount()->generateNewKeys();
 
         $payload = [
-            'contact'              => $this->buildContactPayload($this->client->getAccountEmail()),
+            'contact' => ['mailto:'.$this->client->localAccount()->getEmailAddress()],
             'termsOfServiceAgreed' => true,
         ];
 
-        $newAccountUrl = $this->client->directory()->newAccount();
+        $response = $this->postToAccountUrl($payload);
 
-        $signedPayload = JsonWebSignature::generate(
-            $payload,
-            $newAccountUrl,
-            $this->client->nonce()->getNew(),
-            $this->client->getAccountKeysPath()
-        );
-
-        $response = $this->client->getHttpClient()->post(
-            $newAccountUrl,
-            $signedPayload
-        );
-
-        if ($response->getHttpResponseCode() === 201 && array_key_exists('Location', $response->getRawHeaders())) {
+        if ($response->getHttpResponseCode() === 201 && $response->hasHeader('location')) {
             return AccountData::fromResponse($response);
         }
 
-        throw new RuntimeException('Creating account failed.');
+        $this->throwError($response, 'Creating account failed');
     }
 
     public function get(): AccountData
     {
         if (!$this->exists()) {
-            throw new RuntimeException('Account keys not found.');
+            throw new LetsEncryptClientException('Local account keys not found.');
         }
 
-        $payload = [
-            'onlyReturnExisting' => true,
-        ];
+        // Use the newAccountUrl to get the account data based on the key.
+        // See https://datatracker.ietf.org/doc/html/rfc8555#section-7.3.1
+        $payload = ['onlyReturnExisting' => true];
+        $response = $this->postToAccountUrl($payload);
 
-        $newAccountUrl = $this->client->directory()->newAccount();
+        if ($response->getHttpResponseCode() === 200) {
+            return AccountData::fromResponse($response);
+        }
 
-        $signedPayload = JsonWebSignature::generate(
+        $this->throwError($response, 'Retrieving account failed');
+    }
+
+    private function signPayload(array $payload): array
+    {
+        return JsonWebSignature::generate(
             $payload,
-            $newAccountUrl,
+            $this->client->directory()->newAccount(),
             $this->client->nonce()->getNew(),
-            $this->client->getAccountKeysPath()
+            $this->client->localAccount()->getPrivateKey(),
         );
-
-        $response = $this->client->getHttpClient()->post($newAccountUrl, $signedPayload);
-
-        if ($response->getHttpResponseCode() === 400) {
-            throw new RuntimeException($response->getBody());
-        }
-
-        return AccountData::fromResponse($response);
     }
 
-    private function initAccountDirectory(string $keyType = 'RSA'): void
+    private function postToAccountUrl(array $payload): Response
     {
-        if ($keyType !== 'RSA') {
-            throw new RuntimeException('Key type is not supported.');
-        }
-
-        if (!is_dir($this->client->getAccountKeysPath())) {
-            mkdir($this->client->getAccountKeysPath());
-        }
-
-        if ($keyType === 'RSA') {
-            CryptRSA::generate($this->client->getAccountKeysPath());
-        }
+        return $this->client->getHttpClient()->post(
+            $this->client->directory()->newAccount(),
+            $this->signPayload($payload)
+        );
     }
 
-    private function buildContactPayload(string $email): array
+    protected function throwError(Response $response, string $defaultMessage): never
     {
-        return [
-            'mailto:' . $email,
-        ];
+        $message = $response->getBody()['details'] ?? $defaultMessage;
+        $this->logResponse('error', $message, $response);
+
+        throw new LetsEncryptClientException($message);
     }
 }
