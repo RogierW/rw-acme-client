@@ -114,7 +114,7 @@ class Client implements HttpClientInterface
 
             [$name, $value] = explode(':', $header, 2);
 
-            $headersArr[str_replace('-', '_', strtolower($name))] = trim($value);
+            $headersArr[str_replace('_', '-', strtolower($name))] = trim($value);
         }
 
         return $headersArr;
