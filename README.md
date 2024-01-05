@@ -82,7 +82,7 @@ $validationStatus = $client->domainValidation()->status($order);
 Get the name and content for the validation file:
 ```php
 // Get the data for the HTTP challenge; filename and content.
-$validationData = $client->domainValidation()->getValidationData($validationStatus, AuthorizationChallengeEnum::HTTP);
+$validationData = $client->domainValidation()->getValidationData($validationStatus, \Rogierw\RwAcme\Enums\AuthorizationChallengeEnum::HTTP);
 ```
 
 This returns an array:
@@ -109,7 +109,7 @@ http://example.com/.well-known/acme-challenge/sqQnDYNNywpkwuHeU4b4FTPI2mwSrDF13t
 Get the name and the value for the TXT record:
 ```php
 // Get the data for the DNS challenge.
-$validationData = $client->domainValidation()->getValidationData($validationStatus, AuthorizationChallengeEnum::DNS);
+$validationData = $client->domainValidation()->getValidationData($validationStatus, \Rogierw\RwAcme\Enums\AuthorizationChallengeEnum::DNS);
 ```
 
 This returns an array:
@@ -131,7 +131,7 @@ Array
 ##### http-01
 ```php
 try {
-    $client->domainValidation()->start($account, $validationStatus[0], AuthorizationChallengeEnum::HTTP);
+    $client->domainValidation()->start($account, $validationStatus[0], \Rogierw\RwAcme\Enums\AuthorizationChallengeEnum::HTTP);
 } catch (DomainValidationException $exception) {
     // The local HTTP challenge test has been failed...
 }
@@ -140,7 +140,7 @@ try {
 ##### dns-01
 ```php
 try {
-    $client->domainValidation()->start($account, $validationStatus[0], AuthorizationChallengeEnum::DNS);
+    $client->domainValidation()->start($account, $validationStatus[0], \Rogierw\RwAcme\Enums\AuthorizationChallengeEnum::DNS);
 } catch (DomainValidationException $exception) {
     // The local DNS challenge test has been failed...
 }
