@@ -31,6 +31,8 @@ class DomainValidation extends Endpoint
 
             if ($response->getHttpResponseCode() === 200) {
                 $data[] = DomainValidationData::fromResponse($response);
+
+                continue;
             }
 
             $this->logResponse('error', 'Cannot get domain validation', $response);
