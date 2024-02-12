@@ -26,8 +26,14 @@ class Api
         private ?AcmeAccountInterface $localAccount = null,
         private ?LoggerInterface $logger = null,
         private HttpClientInterface|null $httpClient = null,
-    ) {
-        $this->baseUrl = $staging ? self::STAGING_URL : self::PRODUCTION_URL;
+        string $customUrl = ''
+    )
+    {
+        if ($staging) {
+            $this->baseUrl = empty($customUrl) ? (self::STAGING_URL) : $customUrl;
+        } else {
+            $this->baseUrl = empty($customUrl) ? (self::PRODUCTION_URL) : $customUrl;
+        }
     }
 
     public function setLocalAccount(AcmeAccountInterface $account): self
