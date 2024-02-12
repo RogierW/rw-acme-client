@@ -2,12 +2,15 @@
 
 namespace Rogierw\RwAcme\Support;
 
+use Exception;
 use Rogierw\RwAcme\Exceptions\DomainValidationException;
 use Rogierw\RwAcme\Interfaces\HttpClientInterface;
 use Spatie\Dns\Dns;
 
 class LocalChallengeTest
 {
+    private static const DEFAULT_NAMESERVER = 'dns.google.com';
+
     public static function http(string $domain, string $token, string $keyAuthorization, HttpClientInterface $httpClient): void
     {
         $response = $httpClient->get($domain . '/.well-known/acme-challenge/' . $token, maxRedirects: 1);
@@ -30,20 +33,26 @@ class LocalChallengeTest
 
     public static function dns(string $domain, string $name, string $value): void
     {
-        $dnsResolver = new Dns();
+        try {
+            $dnsResolver = new Dns();
 
-        $soaRecord = $dnsResolver->getRecords($domain, DNS_SOA);
-        $nameserver = $soaRecord[0]->mname();
+            // Get the nameserver.
+            $soaRecord = $dnsResolver->getRecords($domain, DNS_SOA);
 
-        $records = $dnsResolver
-            ->useNameserver($nameserver)
-            ->getRecords(sprintf('%s.%s', $name, $domain), DNS_TXT);
+            $nameserver = empty($soaRecord)
+                ? self::DEFAULT_NAMESERVER
+                : $soaRecord[0]->mname();
 
-        foreach ($records as $record) {
-            if ($record->txt() === $value) {
-                return;
+            $records = $dnsResolver
+                ->useNameserver($nameserver)
+                ->getRecords(sprintf('%s.%s', $name, $domain), DNS_TXT);
+
+            foreach ($records as $record) {
+                if ($record->txt() === $value) {
+                    return;
+                }
             }
-        }
+        } catch (Exception $exception) {}
 
         throw DomainValidationException::localDnsChallengeTestFailed($domain);
     }
