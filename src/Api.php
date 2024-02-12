@@ -27,8 +27,7 @@ class Api
         private ?LoggerInterface $logger = null,
         private HttpClientInterface|null $httpClient = null,
         string $customUrl = ''
-    )
-    {
+    ) {
         if ($staging) {
             $this->baseUrl = empty($customUrl) ? (self::STAGING_URL) : $customUrl;
         } else {
