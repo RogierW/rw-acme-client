@@ -4,6 +4,7 @@ namespace Rogierw\RwAcme\Support;
 
 use Rogierw\RwAcme\Exceptions\DomainValidationException;
 use Rogierw\RwAcme\Interfaces\HttpClientInterface;
+use Spatie\Dns\Dns;
 
 class LocalChallengeTest
 {
@@ -29,10 +30,21 @@ class LocalChallengeTest
 
     public static function dns(string $domain, string $name, string $value): void
     {
-        $response = @dns_get_record(sprintf('%s.%s', $name, $domain), DNS_TXT);
+        $dnsResolver = new Dns();
 
-        if (!in_array($value, array_column($response, 'txt'), true)) {
-            throw DomainValidationException::localDnsChallengeTestFailed($domain);
+        $soaRecord = $dnsResolver->getRecords($domain, DNS_SOA);
+        $nameserver = $soaRecord[0]->mname();
+
+        $records = $dnsResolver
+            ->useNameserver($nameserver)
+            ->getRecords(sprintf('%s.%s', $name, $domain), DNS_TXT);
+
+        foreach ($records as $record) {
+            if ($record->txt() === $value) {
+                return;
+            }
         }
+
+        throw DomainValidationException::localDnsChallengeTestFailed($domain);
     }
 }
