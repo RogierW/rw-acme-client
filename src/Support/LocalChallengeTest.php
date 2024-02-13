@@ -53,6 +53,7 @@ class LocalChallengeTest
                 }
             }
         } catch (Exception $exception) {
+            // An exception can be thrown by the Dns class when a lookup fails.
         }
 
         throw DomainValidationException::localDnsChallengeTestFailed($domain);
