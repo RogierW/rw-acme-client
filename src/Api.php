@@ -24,6 +24,7 @@ class Api
         private ?AcmeAccountInterface $localAccount = null,
         private ?LoggerInterface $logger = null,
         private HttpClientInterface|null $httpClient = null,
+        private ?string $baseUrl = null,
     ) {
         if (empty($this->baseUrl)) {
             $this->baseUrl = $staging ? self::STAGING_URL : self::PRODUCTION_URL;
