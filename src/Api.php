@@ -19,8 +19,6 @@ class Api
     private const PRODUCTION_URL = 'https://acme-v02.api.letsencrypt.org';
     private const STAGING_URL = 'https://acme-staging-v02.api.letsencrypt.org';
 
-    private string $baseUrl;
-
     public function __construct(
         bool $staging = false,
         private ?AcmeAccountInterface $localAccount = null,
