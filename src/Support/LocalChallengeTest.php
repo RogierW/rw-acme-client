@@ -9,7 +9,7 @@ use Spatie\Dns\Dns;
 
 class LocalChallengeTest
 {
-    private static const DEFAULT_NAMESERVER = 'dns.google.com';
+    private const DEFAULT_NAMESERVER = 'dns.google.com';
 
     public static function http(string $domain, string $token, string $keyAuthorization, HttpClientInterface $httpClient): void
     {
@@ -52,7 +52,8 @@ class LocalChallengeTest
                     return;
                 }
             }
-        } catch (Exception $exception) {}
+        } catch (Exception $exception) {
+        }
 
         throw DomainValidationException::localDnsChallengeTestFailed($domain);
     }
