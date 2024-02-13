@@ -81,7 +81,7 @@ class OpenSsl
         return trim($out);
     }
 
-    public static function extractKey(array &$domains, array &$san, string $key, string $name): void
+    private static function extractKey(array &$domains, array &$san, string $key, string $name): void
     {
         if (!empty($domains[$key])) {
             $san = array_merge($san, array_map(function ($ip) use ($name) {
