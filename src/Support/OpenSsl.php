@@ -24,13 +24,29 @@ class OpenSsl
         return trim($output);
     }
 
-    public static function generateCsr(array $domains, OpenSSLAsymmetricKey $privateKey): string
-    {
-        $dn = ['commonName' => $domains[0]];
+    public static function generateCsr(
+        array $domains,
+        OpenSSLAsymmetricKey $privateKey,
+        bool $isAssociative = false
+    ): string {
+        if ($isAssociative) {
+            $san = [];
 
-        $san = implode(',', array_map(function ($dns) {
-            return 'DNS:' . $dns;
-        }, $domains));
+            self::extractKey($domains, $san, 'dns', 'DNS');
+            self::extractKey($domains, $san, 'ip', 'IP Address');
+
+            $san = implode(',', $san);
+
+            $dn = implode(',', array_map(function ($key, $value) {
+                return $key . ':' . $value;
+            }, $domains));
+        } else {
+            $dn = ['commonName' => $domains[0]];
+
+            $san = implode(',', array_map(function ($dns) {
+                return 'DNS:' . $dns;
+            }, $domains));
+        }
 
         $tempFile = tmpfile();
 
@@ -63,5 +79,15 @@ class OpenSsl
         }
 
         return trim($out);
+    }
+
+    public static function extractKey(array &$domains, array &$san, string $key, string $name): void
+    {
+        if (!empty($domains[$key])) {
+            $san = array_merge($san, array_map(function ($ip) use ($name) {
+                return $name . ':' . $ip;
+            }, $domains[$key]));
+            unset($domains[$key]);
+        }
     }
 }
