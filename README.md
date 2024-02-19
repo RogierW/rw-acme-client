@@ -14,7 +14,9 @@ If you're looking for an easy-to-use CLI tool for managing your LE certificates,
 - cURL extension
 - JSON extension
 
-* **Note**: v4 of this package only supports `php:^8.2`. If you're looking for the older versions, check out [v1](https://github.com/RogierW/rw-acme-client/tree/v1) or [v3](https://github.com/RogierW/rw-acme-client/tree/v3).
+**Notes:**
+* It's recommended to have [dig](https://linux.die.net/man/1/dig) installed on your system, as it will be used to fetch DNS information.
+* v4 of this package only supports `php:^8.2`. If you're looking for the older versions, check out [v1](https://github.com/RogierW/rw-acme-client/tree/v1) or [v3](https://github.com/RogierW/rw-acme-client/tree/v3).
 
 ## Installation
 You can install the package via composer:
