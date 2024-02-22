@@ -2,7 +2,7 @@
 
 namespace Rogierw\RwAcme\Support;
 
-use Exception;
+use RuntimeException;
 use Rogierw\RwAcme\Exceptions\DomainValidationException;
 use Rogierw\RwAcme\Interfaces\HttpClientInterface;
 use Spatie\Dns\Dns;
