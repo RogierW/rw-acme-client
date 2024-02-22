@@ -52,7 +52,7 @@ class LocalChallengeTest
                     return;
                 }
             }
-        } catch (Exception) {
+        } catch (RuntimeException) {
             // An exception can be thrown by the Dns class when a lookup fails.
         }
 
