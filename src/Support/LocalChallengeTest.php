@@ -2,9 +2,9 @@
 
 namespace Rogierw\RwAcme\Support;
 
-use RuntimeException;
 use Rogierw\RwAcme\Exceptions\DomainValidationException;
 use Rogierw\RwAcme\Interfaces\HttpClientInterface;
+use RuntimeException;
 use Spatie\Dns\Dns;
 
 class LocalChallengeTest
