@@ -2,9 +2,9 @@
 
 namespace Rogierw\RwAcme\Support;
 
-use Exception;
 use Rogierw\RwAcme\Exceptions\DomainValidationException;
 use Rogierw\RwAcme\Interfaces\HttpClientInterface;
+use RuntimeException;
 use Spatie\Dns\Dns;
 
 class LocalChallengeTest
@@ -52,7 +52,7 @@ class LocalChallengeTest
                     return;
                 }
             }
-        } catch (Exception) {
+        } catch (RuntimeException) {
             // An exception can be thrown by the Dns class when a lookup fails.
         }
 
