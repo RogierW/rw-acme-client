@@ -43,7 +43,7 @@ class LocalChallengeTest
                 return;
             }
 
-            // Try to validate a CNAME record pointing to a TXT recording containing the correct value
+            // Try to validate a CNAME record pointing to a TXT record containing the correct value.
             $cnameRecords = self::getRecords($nameserver, $challenge, DNS_CNAME);
             if (self::validateCnameRecords($cnameRecords, $value)) {
                 return;
