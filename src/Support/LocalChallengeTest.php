@@ -11,8 +11,12 @@ class LocalChallengeTest
 {
     private const DEFAULT_NAMESERVER = 'dns.google.com';
 
-    public static function http(string $domain, string $token, string $keyAuthorization, HttpClientInterface $httpClient): void
-    {
+    public static function http(
+        string $domain,
+        string $token,
+        string $keyAuthorization,
+        HttpClientInterface $httpClient
+    ): void {
         $response = $httpClient->get($domain . '/.well-known/acme-challenge/' . $token, maxRedirects: 1);
 
         $body = $response->getBody();
