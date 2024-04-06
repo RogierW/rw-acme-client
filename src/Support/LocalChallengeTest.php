@@ -34,28 +34,76 @@ class LocalChallengeTest
     public static function dns(string $domain, string $name, string $value): void
     {
         try {
-            $dnsResolver = new Dns();
+            $challenge = sprintf('%s.%s', $name, $domain);
 
-            // Get the nameserver.
-            $soaRecord = $dnsResolver->getRecords($domain, DNS_SOA);
+            // Try to validate TXT records directly.
+            $nameserver = self::getNameserver($domain);
+            $txtRecords = self::getRecords($nameserver, $challenge, DNS_TXT);
+            if (self::validateTxtRecords($txtRecords, $value)) {
+                return;
+            }
 
-            $nameserver = empty($soaRecord)
-                ? self::DEFAULT_NAMESERVER
-                : $soaRecord[0]->mname();
-
-            $records = $dnsResolver
-                ->useNameserver($nameserver)
-                ->getRecords(sprintf('%s.%s', $name, $domain), DNS_TXT);
-
-            foreach ($records as $record) {
-                if ($record->txt() === $value) {
-                    return;
-                }
+            // Try to validate a CNAME record pointing to a TXT record containing the correct value.
+            $cnameRecords = self::getRecords($nameserver, $challenge, DNS_CNAME);
+            if (self::validateCnameRecords($cnameRecords, $value)) {
+                return;
             }
         } catch (RuntimeException) {
             // An exception can be thrown by the Dns class when a lookup fails.
         }
 
         throw DomainValidationException::localDnsChallengeTestFailed($domain);
+    }
+
+    private static function validateTxtRecords(array $records, string $value): bool
+    {
+        foreach ($records as $record) {
+            if ($record->txt() === $value) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static function validateCnameRecords(array $records, string $value): bool
+    {
+        foreach ($records as $record) {
+            $nameserver = self::getNameserver($record->target());
+            $txtRecords = self::getRecords($nameserver, $record->target(), DNS_TXT);
+            if (self::validateTxtRecords($txtRecords, $value)) {
+                return true;
+            }
+
+            // If this is another CNAME, follow it.
+            $cnameRecords = self::getRecords($nameserver, $record->target(), DNS_CNAME);
+            if (!empty($cnameRecords)) {
+                if (self::validateCnameRecords($cnameRecords, $value)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private static function getNameserver(string $domain): string
+    {
+        $dnsResolver = new Dns();
+
+        $result = $dnsResolver->getRecords($domain, DNS_NS);
+
+        return empty($result)
+            ? self::DEFAULT_NAMESERVER
+            : $result[0]->target();
+    }
+
+    private static function getRecords(string $nameserver, string $name, int $dnsType): array
+    {
+        $dnsResolver = new Dns();
+
+        return $dnsResolver
+            ->useNameserver($nameserver)
+            ->getRecords($name, $dnsType);
     }
 }
