@@ -75,8 +75,8 @@ class Client implements HttpClientInterface
                 return $this->makeCurlRequest($httpVerb, $fullUrl, $headers, $payload, $maxRedirects, $retries--);
             }
 
-            // Return internal server error.
-            $httpCode = 500;
+            // Return 504 Gateway Timeout.
+            $httpCode = 504;
         }
 
         return new Response($allHeaders, $allHeaders['url'] ?? '', $httpCode, $body);
