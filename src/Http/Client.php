@@ -28,13 +28,13 @@ class Client implements HttpClientInterface
         return $this->makeCurlRequest('post', $url, $headers, $payload, $maxRedirects);
     }
 
-    private function makeCurlRequest(string $httpVerb, string $fullUrl, array $headers = [], array $payload = [], int $maxRedirects = 0): Response
+    private function makeCurlRequest(string $httpVerb, string $fullUrl, array $headers = [], array $payload = [], int $maxRedirects = 0, int $retries = 5): Response
     {
-        $headers = array_merge([
+        $allHeaders = array_merge([
             'Content-Type: ' . ($httpVerb === 'post') ? 'application/jose+json' : 'application/json',
         ], $headers);
 
-        $curlHandle = $this->getCurlHandle($fullUrl, $headers, $maxRedirects);
+        $curlHandle = $this->getCurlHandle($fullUrl, $allHeaders, $maxRedirects);
 
         switch ($httpVerb) {
             case 'head':
@@ -54,19 +54,34 @@ class Client implements HttpClientInterface
 
         $rawResponse = curl_exec($curlHandle);
         $headerSize = curl_getinfo($curlHandle, CURLINFO_HEADER_SIZE);
-        $headers = curl_getinfo($curlHandle);
+        $allHeaders = curl_getinfo($curlHandle);
 
         $rawHeaders = mb_substr($rawResponse, 0, $headerSize);
         $rawBody = mb_substr($rawResponse, $headerSize);
         $body = $rawBody;
 
-        $allHeaders = array_merge($headers, $this->parseRawHeaders($rawHeaders));
+        $allHeaders = array_merge($allHeaders, $this->parseRawHeaders($rawHeaders));
 
         if (json_validate($rawBody)) {
             $body = json_decode($rawBody, true, 512, JSON_THROW_ON_ERROR);
         }
 
-        return new Response($allHeaders, $allHeaders['url'] ?? '', $allHeaders['http_code'] ?? null, $body);
+        $httpCode = $allHeaders['http_code'] ?? null;
+
+        // Catch HTTP status code 0 when Let's Encrypt API is having problems.
+        if ($httpCode === 0) {
+            // Retry.
+            if ($retries > 0) {
+                sleep(2);
+
+                return $this->makeCurlRequest($httpVerb, $fullUrl, $headers, $payload, $maxRedirects, $retries--);
+            }
+
+            // Return internal server error.
+            $httpCode = 500;
+        }
+
+        return new Response($allHeaders, $allHeaders['url'] ?? '', $httpCode, $body);
     }
 
     private function attachRequestPayload(CurlHandle $curlHandle, array $data): void
