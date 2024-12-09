@@ -15,7 +15,6 @@ class AccountData extends Data
         public string $status,
         public array $contact,
         public string $agreement,
-        public string $initialIp,
         public string $createdAt,
     ) {
     }
