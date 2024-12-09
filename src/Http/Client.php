@@ -28,8 +28,14 @@ class Client implements HttpClientInterface
         return $this->makeCurlRequest('post', $url, $headers, $payload, $maxRedirects);
     }
 
-    private function makeCurlRequest(string $httpVerb, string $fullUrl, array $headers = [], array $payload = [], int $maxRedirects = 0, int $retries = 3): Response
-    {
+    private function makeCurlRequest(
+        string $httpVerb,
+        string $fullUrl,
+        array $headers = [],
+        array $payload = [],
+        int $maxRedirects = 0,
+        int $retries = 3
+    ): Response {
         $allHeaders = array_merge([
             'Content-Type: ' . ($httpVerb === 'post') ? 'application/jose+json' : 'application/json',
         ], $headers);
