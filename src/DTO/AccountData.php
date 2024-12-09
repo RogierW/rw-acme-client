@@ -31,7 +31,6 @@ class AccountData extends Data
             status: $response->getBody()['status'],
             contact: $response->getBody()['contact'],
             agreement: $response->getBody()['agreement'] ?? '',
-            initialIp: $response->getBody()['initialIp'],
             createdAt: $response->getBody()['createdAt']
         );
     }
