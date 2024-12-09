@@ -78,7 +78,7 @@ class Client implements HttpClientInterface
         if ($httpCode === 0) {
             // Retry.
             if ($retries > 0) {
-                return $this->makeCurlRequest($httpVerb, $fullUrl, $headers, $payload, $maxRedirects, $retries--);
+                return $this->makeCurlRequest($httpVerb, $fullUrl, $headers, $payload, $maxRedirects, --$retries);
             }
 
             // Return 504 Gateway Timeout.
