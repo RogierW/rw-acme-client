@@ -19,7 +19,7 @@
     "ext-openssl": "*",
     "psr/log": "^3.0",
     "spatie/dns": "^2.5",
-    "spatie/laravel-data": "^3.9"
+    "spatie/laravel-data": "^4.0"
   },
   "require-dev": {
     "larapack/dd": "^1.0"
