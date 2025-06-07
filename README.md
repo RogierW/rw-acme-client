@@ -1,8 +1,6 @@
 # Let’s Encrypt ACME client written in PHP
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/rogierw/rw-acme-client.svg?style=flat-square)](https://packagist.org/packages/rogierw/rw-acme-client)
-[![Scrutinizer Code Quality](https://img.shields.io/scrutinizer/g/RogierW/rw-acme-client.svg?style=flat-square)](https://scrutinizer-ci.com/g/RogierW/rw-acme-client/?branch=master)
-[![StyleCI](https://github.styleci.io/repos/224902862/shield?style=flat-square&branch=master)](https://github.styleci.io/repos/224902862)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/bashgeek/rw-acme-client.svg?style=flat-square)](https://packagist.org/packages/bashgeek/rw-acme-client)
 
 This library allows you to request, renew and revoke SSL certificates provided by Let's Encrypt.
 
@@ -21,7 +19,7 @@ If you're looking for an easy-to-use CLI tool for managing your LE certificates,
 ## Installation
 You can install the package via composer:
 
-`composer require rogierw/rw-acme-client`
+`composer require bashgeek/rw-acme-client`
 
 ## Usage
 
