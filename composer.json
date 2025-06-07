@@ -1,13 +1,18 @@
 {
-  "name": "rogierw/rw-acme-client",
+  "name": "bashgeek/rw-acme-client",
   "description": "LetsEncrypt client library for ACME v2 written in PHP.",
-  "homepage": "https://github.com/RogierW/rw-acme-client",
+  "homepage": "https://github.com/bashgeek/rw-acme-client",
   "license": "MIT",
   "authors": [
     {
       "name": "Rogier van der Werf",
       "email": "rogier@rwweb.nl",
       "homepage": "http://rogier.eu",
+      "role": "Developer"
+    },
+    {
+      "name": "Daniel Schmitz",
+      "email": "daniel@bashgeek.net",
       "role": "Developer"
     }
   ],
