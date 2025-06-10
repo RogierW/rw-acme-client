@@ -19,7 +19,6 @@ class Account extends Endpoint
         $this->client->localAccount()->generateNewKeys();
 
         $payload = [
-            'contact' => ['mailto:'.$this->client->localAccount()->getEmailAddress()],
             'termsOfServiceAgreed' => true,
         ];
 
