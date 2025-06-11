@@ -18,7 +18,7 @@ class OrderData extends Data
         public array $domainValidationUrls,
         public string $finalizeUrl,
         public string $accountUrl,
-        public string|null $certificateUrl,
+        public ?string $certificateUrl,
         public bool $finalized = false,
     ) {
     }
