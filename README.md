@@ -57,7 +57,7 @@ $account = $client->account()->get();
 
 ### Difference between `account` and `localAccount`
 - `account` is the account created at the ACME (Let's Encrypt) server with data from the `localAccount`.
-- `localAccount` handles the private/public key pair and contact email address used to sign requests to the ACME server. Depending on the implementation, this data is stored locally or, for example, in a database.
+- `localAccount` handles the private/public key pair used to sign requests to the ACME server. Depending on the implementation, this data is stored locally or, for example, in a database.
 
 ### Creating an order
 ```php
