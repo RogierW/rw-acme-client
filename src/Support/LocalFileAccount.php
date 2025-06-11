@@ -8,33 +8,12 @@ use Rogierw\RwAcme\Interfaces\AcmeAccountInterface;
 class LocalFileAccount implements AcmeAccountInterface
 {
     private string $accountName;
-    private string $emailAddress;
 
-    public function __construct(private string $accountKeysPath, ?string $emailAddress = null)
+    public function __construct(private string $accountKeysPath)
     {
         // Make sure the path ends with a slash.
         $this->accountKeysPath = rtrim($this->accountKeysPath, '/').'/';
-
-        if ($emailAddress !== null) {
-            $this->setEmailAddress($emailAddress);
-        }
-    }
-
-    public function setEmailAddress(string $emailAddress): self
-    {
-        $alphaNumAccountName = preg_replace('/[^a-zA-Z0-9\-]/', '_', $emailAddress);
-        // Prepend a hash to prevent collisions.
-        $shortHash = substr(hash('sha256', $emailAddress), 0, 16);
-
-        $this->emailAddress = $emailAddress;
-        $this->accountName = $shortHash.'_'.$alphaNumAccountName;
-
-        return $this;
-    }
-
-    public function getEmailAddress(): string
-    {
-        return $this->emailAddress;
+        $this->accountName = 'account_'.substr(hash('sha256', $this->accountKeysPath), 0, 16);
     }
 
     public function getPrivateKey(): string

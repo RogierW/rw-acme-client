@@ -28,7 +28,7 @@ You can install the package via composer:
 Create an instance of `Rogierw\RwAcme\Api` client and provide it with a local account that will be used to store the account keys.
 
 ```php
-$localAccount = new \Rogierw\RwAcme\Support\LocalFileAccount(__DIR__.'/__account', 'test@example.com');
+$localAccount = new \Rogierw\RwAcme\Support\LocalFileAccount(__DIR__.'/__account');
 $client = new Api(localAccount: $localAccount);
 ```
 
@@ -39,7 +39,7 @@ $client = new Api();
 
 // Do some stuff.
 
-$localAccount = new \Rogierw\RwAcme\Support\LocalFileAccount(__DIR__.'/__account', 'test@example.com');
+$localAccount = new \Rogierw\RwAcme\Support\LocalFileAccount(__DIR__.'/__account');
 $client->setLocalAccount($localAccount);
 ```
 
@@ -47,7 +47,7 @@ $client->setLocalAccount($localAccount);
 
 ### Creating an account
 ```php
-if (!$client->account()->exists()) {
+if (! $client->account()->exists()) {
     $account = $client->account()->create();
 }
 
