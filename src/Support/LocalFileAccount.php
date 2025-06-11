@@ -10,7 +10,7 @@ class LocalFileAccount implements AcmeAccountInterface
     private string $accountName;
     private string $emailAddress;
 
-    public function __construct(private string $accountKeysPath, string $emailAddress = null)
+    public function __construct(private string $accountKeysPath, ?string $emailAddress = null)
     {
         // Make sure the path ends with a slash.
         $this->accountKeysPath = rtrim($this->accountKeysPath, '/').'/';

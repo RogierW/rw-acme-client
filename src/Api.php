@@ -23,7 +23,7 @@ class Api
         bool $staging = false,
         private ?AcmeAccountInterface $localAccount = null,
         private ?LoggerInterface $logger = null,
-        private HttpClientInterface|null $httpClient = null,
+        private ?HttpClientInterface $httpClient = null,
         private ?string $baseUrl = null,
     ) {
         if (empty($this->baseUrl)) {
