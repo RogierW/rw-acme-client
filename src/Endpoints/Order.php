@@ -11,7 +11,7 @@ use Rogierw\RwAcme\Support\Base64;
 
 class Order extends Endpoint
 {
-    public function new(AccountData $accountData, array $domains): OrderData
+    public function new(AccountData $accountData, array $domains, ?string $profile = null): OrderData
     {
         $identifiers = [];
         foreach ($domains as $domain) {
@@ -30,6 +30,10 @@ class Order extends Endpoint
             'notBefore' => '',
             'notAfter' => '',
         ];
+
+        if ($profile !== null) {
+            $payload['profile'] = $profile;
+        }
 
         $newOrderUrl = $this->client->directory()->newOrder();
 

@@ -62,6 +62,9 @@ $account = $client->account()->get();
 ### Creating an order
 ```php
 $order = $client->order()->new($account, ['example.com']);
+
+// Optionally request a specific ACME profile, if the ACME server supports it.
+$order = $client->order()->new($account, ['example.com'], 'tlsserver');
 ```
 
 #### Renewal
