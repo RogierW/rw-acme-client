@@ -20,7 +20,7 @@ class KeyId
             'url' => $url,
         ];
 
-        $payload = is_array($payload)
+        $payload = is_array($payload) && count($payload) > 0
             ? str_replace('\\/', '/', json_encode($payload))
             : '';
 
